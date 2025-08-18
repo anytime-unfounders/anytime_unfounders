@@ -1,0 +1,22 @@
+# Core
+langchain==0.1.16
+langchain-community==0.0.34
+duckdb==0.10.2  # Lightweight vector store alternative to FAISS
+
+# Embeddings (choose one)
+ollama==0.2.2  # Local embeddings/LLMs
+# OR
+openai==1.12.0  # If using OpenAI's API
+
+# Document Loaders
+unstructured==0.13.4  # For PDF/Word processing
+langchain-document-transformers==0.0.3
+
+# Text Splitting
+tiktoken==0.6.0  # For smart chunking
+
+# Django
+Django==5.0.6
+djangorestframework==3.15.1
+djangorestframework-simplejwt==5.3.1
+django-cors-headers==4.3.1
