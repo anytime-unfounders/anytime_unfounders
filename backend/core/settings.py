@@ -138,3 +138,11 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+INSTALLED_APPS += ["pricing", "rest_framework"]
+
+PRICING_MODEL_STORE = BASE_DIR / "backend/shared/model_store/pricing"
+PRICING_DEFAULT_OUTPUT_CURRENCY = "CAD"
+
+OPENAI_MODEL = "gpt-4o-mini" 
+
