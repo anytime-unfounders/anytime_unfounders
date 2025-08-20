@@ -139,7 +139,7 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-INSTALLED_APPS += ["pricing", "rest_framework"]
+INSTALLED_APPS += ["pricing"]
 
 PRICING_MODEL_STORE = BASE_DIR / "backend/shared/model_store/pricing"
 PRICING_DEFAULT_OUTPUT_CURRENCY = "CAD"
