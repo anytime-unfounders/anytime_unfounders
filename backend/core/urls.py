@@ -23,4 +23,4 @@ urlpatterns = [
     #path("api/provider/", include("provider_api.urls")), # servicer app
 ]
 
-urlpatterns += [ path("api/pricing/", include("pricing.urls")) ]
+# urlpatterns += [ path("api/pricing/", include("pricing.urls")) ]
