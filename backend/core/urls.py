@@ -19,8 +19,14 @@ from django.urls import path, include
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    #path("api/user/", include("user_api.urls")), # consumer app
-    #path("api/provider/", include("provider_api.urls")), # servicer app
+    
+    # auth/registration
+    path("api/auth/", include("dj_rest_auth.urls")),
+    path("api/auth/registration/", include("dj_rest_auth.registration.urls")),
+
+    # APIs
+    path("api/user/", include("user_api.urls")), # consumer app
+    path("api/provider/", include("provider_api.urls")), # provider portal
 ]
 
 # urlpatterns += [ path("api/pricing/", include("pricing.urls")) ]

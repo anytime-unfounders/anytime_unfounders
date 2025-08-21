@@ -31,11 +31,28 @@ ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 # Application definition
 
 INSTALLED_APPS = [
+    # django
     "django.contrib.admin","django.contrib.auth","django.contrib.contenttypes",
     "django.contrib.sessions","django.contrib.messages","django.contrib.staticfiles",
-    "corsheaders","rest_framework",
-    "accounts","user_api","provider_api", "backend.pricing",
+    # third party
+    "corsheaders","rest_framework", "rest_framework.authtoken", 
+    "django.contrib.sites", "allauth","allauth.account",
+    "dj_rest_auth","dj_rest_auth.registration",
+    # apps
+    "core","accounts","user_api","provider_api",
+    # remove until it's a real Django app:
+    # "backend.pricing",
 ]
+
+INSTALLED_APPS += ["pgcrypto"]
+PGCRYPTO_DEFAULT_HASH_ALGORITHM = "sha256"
+PGCRYPTO_DEFAULT_STRONG = True    
+# Required: symmetric key for encryption — keep secret
+PGCRYPTO_PASSPHRASE = "change-me-in-env"
+
+SITE_ID = 1
+
+CORS_ALLOW_ALL_ORIGINS = True  # tighten for prod
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
@@ -59,12 +76,42 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.AllowAny",),
 }
 
-# (optional) SimpleJWT tweaks
+# >>> dj-rest-auth use JWT instead of authtoken <<<
+REST_USE_JWT = True
+TOKEN_MODEL = None # disables authtoken requirement
+
+MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+]
+
+# allauth
+ACCOUNT_AUTHENTICATION_METHOD = "email"
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"  # sends verification email
+
+# email dev setup
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+# JWT (tweak expiries later)
 from datetime import timedelta
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
+  "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
+  "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
 }
+
+# Stripe keys via env vars
+import environ, os
+env = environ.Env()
+environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
+STRIPE_SECRET_KEY = env("STRIPE_SECRET_KEY", default="")
+STRIPE_WEBHOOK_SECRET = env("STRIPE_WEBHOOK_SECRET", default="")
 
 ROOT_URLCONF = 'core.urls'
 
@@ -86,17 +133,20 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    "default": env.db(
+        "DATABASE_URL",
+        default="postgres://user:pass@localhost:5432/anytime_unfounders"
+    )
 }
 
+# cookies & security (prod)
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SECURE_HSTS_SECONDS = 31536000
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
