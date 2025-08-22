@@ -1,9 +1,11 @@
 "use client";
 
-import { Instagram, Music2 } from "lucide-react"; 
+import { Instagram, Music2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import AnimatedIntro from "../../components/AnimatedIntro";
+import button from "../../components/ui/button";
+
 
 export default function LandingPage() {
   const [scrollY, setScrollY] = useState(0);
@@ -16,7 +18,7 @@ export default function LandingPage() {
 
   return (
     // <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[#F8F7FF] p-6">
-      
+
     //   {/* Parallax Blobs */}
     //   <motion.div
     //     className="absolute top-20 left-10 w-72 h-72 bg-[#7163FF] rounded-full mix-blend-multiply filter blur-3xl opacity-30"
@@ -101,9 +103,23 @@ export default function LandingPage() {
     //     </motion.div>
     //   </div>
     // </main>
-    <main>  
+    <main>
       <div>
-        <AnimatedIntro/>
+        <AnimatedIntro />
+        {/* Text at the bottom */}
+        <div className="absolute bottom-5 w-full flex flex-col items-center space-y-3">
+          <div className="text-center">
+            <p className="text-2xl font-semibold text-gray-800">
+              Services Delivered to Your Door, Instantly.
+            </p>
+            <p className="text-lg text-gray-600">
+              Anytime, anywhere, Anyone You Need.
+            </p>
+          </div>
+          <button className="rounded-full bg-purple-600 px-8 py-3 font-semibold text-white shadow-lg transition duration-300 hover:bg-purple-700">
+            Get Started
+          </button>
+        </div>
       </div>
     </main>
   );

@@ -45,7 +45,7 @@ export default function AnimatedIntro({
                 alt="Anytime letters"
                 width={size}
                 height={size}
-                className="absolute top-6 left-6"
+                className="absolute top-[10px] left-[100px]"
             />
 
             {/* Wheels */}
@@ -82,19 +82,7 @@ export default function AnimatedIntro({
                     priority
                 />
             </motion.div>
-            {/* Text at the bottom */}
-            <div className="absolute bottom-10 w-full text-center">
-                <p className="text-2xl font-semibold text-gray-800">
-                    Services Delivered to Your Door, Instantly.
-                </p>
-                <p className="text-lg text-gray-600">
-                    Anytime, anywhere, Anyone You Need.
-                </p>
-            </div>
-            <button
-                className="pointer-events-auto mt-1 rounded-full bg-purple-600 px-8 py-3 font-semibold text-white shadow-lg transition duration-300 hover:bg-purple-700">
-                Get Started
-            </button>
+
         </div>
     );
 }
