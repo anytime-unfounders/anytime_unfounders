@@ -212,22 +212,28 @@ AXES_FAILURE_LIMIT = 5
 AXES_COOLOFF_TIME = 1  # 1 hour
 AXES_LOCK_OUT_AT_FAILURE = True
 
+from pathlib import Path
+LOG_DIR = Path(BASE_DIR) / "logs"
+LOG_DIR.mkdir(parents=True, exist_ok=True)
 
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'security_file': {
-            'level': 'WARNING',
-            'class': 'logging.FileHandler',
-            'filename': '/var/log/django/security.log',
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "security_file": {
+            "level": "WARNING",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": str(LOG_DIR / "security.log"),
+            "maxBytes": 1024 * 1024, # 1 MB
+            "backupCount": 3,
         },
+        "console": {"class": "logging.StreamHandler"},
     },
-    'loggers': {
-        'django.security': {
-            'handlers': ['security_file'],
-            'level': 'WARNING',
-            'propagate': True,
+    "loggers": {
+        "django.security": {
+            "handlers": ["security_file","console"],
+            "level": "WARNING",
+            "propagate": False,
         },
     },
 }
