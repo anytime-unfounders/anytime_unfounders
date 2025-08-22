@@ -212,7 +212,6 @@ AXES_FAILURE_LIMIT = 5
 AXES_COOLOFF_TIME = 1  # 1 hour
 AXES_LOCK_OUT_AT_FAILURE = True
 
-from pathlib import Path
 LOG_DIR = Path(BASE_DIR) / "logs"
 LOG_DIR.mkdir(parents=True, exist_ok=True)
 
