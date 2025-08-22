@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,49 +21,62 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-4kxt-3j(u*5puknh!#aft!d^r8(0@&(fvs$q$(29hk1hm&%_(h'
+SECRET_KEY = os.getenv('DjANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
-
+SITE_ID=1
 
 # Application definition
-
 INSTALLED_APPS = [
-    # django
-    "django.contrib.admin","django.contrib.auth","django.contrib.contenttypes",
-    "django.contrib.sessions","django.contrib.messages","django.contrib.staticfiles",
-    # third party
-    "corsheaders","rest_framework", "rest_framework.authtoken", 
-    "django.contrib.sites", "allauth","allauth.account",
-    "dj_rest_auth","dj_rest_auth.registration",
-    # apps
-    "core","accounts","user_api","provider_api",
-    # remove until it's a real Django app:
-    # "backend.pricing",
+    # Django defaults
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "django.contrib.sites",
+
+    # Third-party
+    "corsheaders",
+    "rest_framework",
+    "rest_framework.authtoken",
+    "axes",
+    "django_otp",
+    "django_otp.plugins.otp_totp",
+    "pgcrypto",
+
+    # Allauth
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",
+
+    # dj-rest-auth (must come AFTER allauth)
+    "dj_rest_auth",
+    "dj_rest_auth.registration",
+
+    # Local apps
+    "accounts",
+    "user_api",
+    "provider_api",
+    "pricing",
 ]
+   
 
-INSTALLED_APPS += ["pgcrypto"]
-PGCRYPTO_DEFAULT_HASH_ALGORITHM = "sha256"
-PGCRYPTO_DEFAULT_STRONG = True    
-# Required: symmetric key for encryption — keep secret
-PGCRYPTO_PASSPHRASE = "change-me-in-env"
-
-SITE_ID = 1
-
-CORS_ALLOW_ALL_ORIGINS = True  # tighten for prod
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
-    "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "allauth.account.middleware.AccountMiddleware", 
     "django.contrib.messages.middleware.MessageMiddleware",
+    "django_otp.middleware.OTPMiddleware"
 ]
 
 CORS_ALLOWED_ORIGINS = [
@@ -73,42 +87,18 @@ CORS_ALLOWED_ORIGINS = [
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework.authentication.TokenAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.AllowAny",),
 }
 
-# >>> dj-rest-auth use JWT instead of authtoken <<<
-REST_USE_JWT = True
-TOKEN_MODEL = None # disables authtoken requirement
-
-
-AUTHENTICATION_BACKENDS = [
-    "django.contrib.auth.backends.ModelBackend",
-    "allauth.account.auth_backends.AuthenticationBackend",
-]
-
-# allauth
-ACCOUNT_AUTHENTICATION_METHOD = "email"
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_EMAIL_VERIFICATION = "mandatory"  # sends verification email
-
-# email dev setup
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-
-# JWT (tweak expiries later)
+# (optional) SimpleJWT tweaks
 from datetime import timedelta
 SIMPLE_JWT = {
-  "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
-  "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
 }
-
-# Stripe keys via env vars
-import environ, os
-env = environ.Env()
-environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
-STRIPE_SECRET_KEY = env("STRIPE_SECRET_KEY", default="")
-STRIPE_WEBHOOK_SECRET = env("STRIPE_WEBHOOK_SECRET", default="")
 
 ROOT_URLCONF = 'core.urls'
 
@@ -130,20 +120,17 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
+
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    "default": env.db(
-        "DATABASE_URL",
-        default="postgres://user:pass@localhost:5432/anytime_unfounders"
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 }
 
-# cookies & security (prod)
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
-SECURE_HSTS_SECONDS = 31536000
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -161,6 +148,14 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
+]
+
+# Use Argon2 password hasher
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.Argon2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
 ]
 
 
@@ -186,10 +181,53 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-#INSTALLED_APPS += ["pricing"]
 
-#PRICING_MODEL_STORE = BASE_DIR / "backend/shared/model_store/pricing"
-#PRICING_DEFAULT_OUTPUT_CURRENCY = "CAD"
+PRICING_MODEL_STORE = BASE_DIR / "backend/shared/model_store/pricing"
+PRICING_DEFAULT_OUTPUT_CURRENCY = "CAD"
 
 OPENAI_MODEL = "gpt-4o-mini" 
 
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'  # or 'Strict'
+
+SECURE_SSL_REDIRECT = True
+SECURE_HSTS_SECONDS = 31536000  # 1 year
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_BROWSER_XSS_FILTER = True
+X_FRAME_OPTIONS = 'DENY'
+
+
+AUTHENTICATION_BACKENDS = [
+    'axes.backends.AxesBackend',
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+AXES_FAILURE_LIMIT = 5
+AXES_COOLOFF_TIME = 1  # 1 hour
+AXES_LOCK_OUT_AT_FAILURE = True
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'security_file': {
+            'level': 'WARNING',
+            'class': 'logging.FileHandler',
+            'filename': '/var/log/django/security.log',
+        },
+    },
+    'loggers': {
+        'django.security': {
+            'handlers': ['security_file'],
+            'level': 'WARNING',
+            'propagate': True,
+        },
+    },
+}
