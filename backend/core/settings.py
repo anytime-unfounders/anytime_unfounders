@@ -75,6 +75,8 @@ ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = "email" # older allauth
 ACCOUNT_LOGIN_METHODS = {"email"}
 
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+
 REGISTER_SERIALIZER = "accounts.serializers.EmailRegisterSerializer"
 
 # older style (some installs still expect this mapping)

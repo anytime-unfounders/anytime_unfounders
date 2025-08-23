@@ -16,6 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from accounts.views import CustomRegisterView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -23,6 +24,7 @@ urlpatterns = [
     # auth/registration
     path("api/auth/", include("dj_rest_auth.urls")),
     path("api/auth/registration/", include("dj_rest_auth.registration.urls")),
+    path("api/auth/registration/", CustomRegisterView.as_view()),
 
     # APIs
     path("api/user/", include("user_api.urls")), # consumer app
