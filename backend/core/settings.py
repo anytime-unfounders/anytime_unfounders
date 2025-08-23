@@ -24,7 +24,7 @@ LOGS_DIR.mkdir(exist_ok=True)
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-4kxt-3j(u*5puknh!#aft!d^r8(0@&(fvs$q$(29hk1hm&%_(h'
-
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "sk_test_51RynRHBf33ek24lBZjV43c5DTVMWzzLI6M8DkqdNEc049K422sHuzWE6AFwG8XqIK7gXQ9DWjsG8QSTPAqnE2iWE00op9c1NWr")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
