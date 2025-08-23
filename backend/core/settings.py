@@ -71,7 +71,16 @@ INSTALLED_APPS = [
 # allauth – email-only login/signup
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
+
+ACCOUNT_AUTHENTICATION_METHOD = "email" # older allauth
 ACCOUNT_LOGIN_METHODS = {"email"}
+
+REGISTER_SERIALIZER = "accounts.serializers.EmailRegisterSerializer"
+
+# older style (some installs still expect this mapping)
+REST_AUTH_REGISTER_SERIALIZERS = {
+    "REGISTER_SERIALIZER": "accounts.serializers.EmailRegisterSerializer"
+}
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
