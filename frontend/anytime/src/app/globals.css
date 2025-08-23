@@ -120,3 +120,45 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Slide in from left */
+@keyframes slide-in-left {
+  0% {
+    transform: translateX(-100vw);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+.animate-slide-in-left {
+  animation: slide-in-left 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Normal infinite spin */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* decelerated spin-stop */
+@keyframes spin-stop {
+  0% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(1080deg);
+  } /* settle softly */
+  100% {
+    transform: rotate(1240deg);
+  } /* settle softly */
+}
+
+.animate-spin-stop {
+  animation: spin-stop 2s ease-out forwards; /* slows down and freezes */
+}
