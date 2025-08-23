@@ -23,8 +23,9 @@ urlpatterns = [
     
     # auth/registration
     path("api/auth/", include("dj_rest_auth.urls")),
-    path("api/auth/registration/", include("dj_rest_auth.registration.urls")),
     path("api/auth/registration/", CustomRegisterView.as_view()),
+    path("api/user/", include("user_api.urls")),
+    path("api/provider/", include("provider_api.urls")),
 
     # APIs
     path("api/user/", include("user_api.urls")), # consumer app
