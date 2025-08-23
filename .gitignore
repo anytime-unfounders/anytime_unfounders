@@ -7,12 +7,3 @@ venv/
 logs/
 *.log
 *.sqlite3
-__pycache__/
-*.py[cod]
-*.class
-venv/
-.env
-.DS_Store
-logs/
-*.log
-*.sqlite3
