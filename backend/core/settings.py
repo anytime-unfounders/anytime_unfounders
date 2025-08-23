@@ -67,8 +67,11 @@ INSTALLED_APPS = [
     "provider_api",
     "pricing",
 ]
-   
-ACCOUNT_EMAIL_VERIFICATION = "optional"
+
+# allauth – email-only login/signup
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_LOGIN_METHODS = {"email"}
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
