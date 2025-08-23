@@ -24,6 +24,7 @@ urlpatterns = [
     # auth/registration
     path("api/auth/", include("dj_rest_auth.urls")),
     path("api/auth/registration/", CustomRegisterView.as_view()),
+    path("accounts/", include("allauth.urls")), # add allauth urls
     path("api/user/", include("user_api.urls")),
     path("api/provider/", include("provider_api.urls")),
 

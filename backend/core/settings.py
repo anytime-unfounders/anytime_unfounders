@@ -83,6 +83,9 @@ REST_AUTH_REGISTER_SERIALIZERS = {
     "REGISTER_SERIALIZER": "accounts.serializers.EmailRegisterSerializer"
 }
 
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend" 
+ACCOUNT_EMAIL_VERIFICATION = "optional"
+
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
