@@ -68,7 +68,7 @@ INSTALLED_APPS = [
     "pricing",
 ]
    
-
+ACCOUNT_EMAIL_VERIFICATION = "optional"
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
