@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
-let emails: string[] = []; // In-memory, use a database for production!
+const emails: string[] = []; // In-memory, use a database for production!
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
+enxport default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "POST") {
     const { email } = req.body;
     if (email && typeof email === "string") {
