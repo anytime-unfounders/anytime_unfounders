@@ -1,11 +1,8 @@
+# Python / Django
+venv/
+.venv/
 __pycache__/
 *.py[cod]
-*$py.class
-venv/
 db.sqlite3
-logs/
-*.log
-.DS_Store
-.vscode/
-.env
+**/.env
 *.pyc
