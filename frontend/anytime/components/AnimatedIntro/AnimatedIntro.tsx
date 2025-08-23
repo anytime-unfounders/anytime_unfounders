@@ -28,21 +28,18 @@ export default function AnimatedIntro({ onIntroDone }: { onIntroDone: () => void
     <div className="flex w-full">
       {/* Phone slides in after motorcycle */}
       <PhoneSVG
-        className={`scale-[0.3] absolute top-[-50rem] right-[-40rem] ${
-          showPhone ? "animate-slide-in-left" : "opacity-0"
-        }`}
+        className={`scale-[0.3] absolute top-[-44rem] right-[-46.5rem] ${showPhone ? "animate-slide-in-left" : "opacity-0"
+          }`}
       />
 
       {/* Anytime slides in after phone */}
       <AnytimeSVG
-        className={`scale-[0.3] absolute top-[-50rem] right-[-45rem] ${
-          showAnytime ? "animate-slide-in-left " : "opacity-0 scale-[0.05]"
-        }`}
+        className={`scale-[0.3] absolute top-[-45rem] right-[-49rem] ${showAnytime ? "animate-slide-in-left " : "opacity-0 scale-[0.05]"
+          }`}
       />
       <PhoneCoverSVG
-        className={`scale-[0.171] absolute top-[-49.5rem] right-[-26.5rem] ${
-          showPhone ? "animate-slide-in-left " : "opacity-0"
-        }`}
+        className={`scale-[0.171] absolute top-[-44rem] right-[-33rem] ${showPhone ? "animate-slide-in-left " : "opacity-0"
+          }`}
       />
       {/* Pass stop condition down */}
       <AnimatedMotorcycle stopSpin={showPhone} />
