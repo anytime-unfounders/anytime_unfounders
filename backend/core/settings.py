@@ -28,13 +28,6 @@ STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "sk_test_51RynRHBf33ek24lBZjV
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# make sure https redirect is off
-if DEBUG:
-    SECURE_SSL_REDIRECT = False # turn false
-    SECURE_HSTS_SECONDS = 0
-    SESSION_COOKIE_SECURE = False
-    CSRF_COOKIE_SECURE = False
-
 ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 SITE_ID=1
 
@@ -251,3 +244,12 @@ LOGGING = {
         },
     },
 }
+
+# make sure https redirect is off, dev override 
+if DEBUG:
+    SECURE_SSL_REDIRECT = False
+    SECURE_HSTS_SECONDS = 0
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
+    # also exempt all API paths from any redirect, just in case
+    SECURE_REDIRECT_EXEMPT = [r"^api/"]
