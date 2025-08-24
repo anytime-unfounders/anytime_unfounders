@@ -2,15 +2,16 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 
-from .forms import NameForm
-from .forms import LoginForm
-from .forms import LogoutForm
+from .forms import UserRegistrationForm
+from .forms import UserPasswordCreationForm
+from .forms import UserLoginForm
+from .forms import UserLogoutForm
 
 def register(request):
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
-        form = NameForm(request.POST)
+        form = UserRegistrationForm(request.POST)
         # check whether it's valid:
         if form.is_valid():
             # process the data in form.cleaned_data (variables can now be used-- save to database, send email, etc.)
@@ -27,15 +28,27 @@ def register(request):
             # redirect to a page after successfully submitting form:
             return HttpResponseRedirect('/thanks/') 
 
-    # if any other method, use NameForm to generate form, validate, access cleaned data
+    # if any other method, use UserRegistrationForm to generate form, validate, access cleaned data
     else:
-        form = NameForm()
+        form = UserRegistrationForm()
 
     return render(request, 'name.html', {'form': form}) # return form available as a variable named 'form'
 
+def password_creation(request):
+    if request.method == 'POST':
+        form = UserPasswordCreationForm(request.POST)
+        if form.is_valid():
+            user_new_password = form.cleaned_data['user_new_password']
+            user_confirm_password = form.cleaned_data['user_confirm_password']
+            # Process the password change (e.g., update the user's password)
+            return HttpResponseRedirect('/thanks/')
+    else:
+        form = UserPasswordCreationForm()
+    return render(request, 'name.html', {'form': form})
+
 def login(request):
     if request.method == 'POST':
-        form = LoginForm(request.POST)
+        form = UserLoginForm(request.POST)
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
@@ -44,15 +57,15 @@ def login(request):
                 login(request, user)
                 return HttpResponseRedirect('/thanks/')
     else:
-        form = LoginForm()
+        form = UserLoginForm()
     return render(request, 'name.html', {'form': form})    
 
 def logout(request):
     if request.method == 'POST':
-        form = LogoutForm(request.POST)
+        form = UserLogoutForm(request.POST)
         if form.is_valid():
             logout(request) # validates empty logout form, calls function to log out user
             return HttpResponseRedirect('/thanks/')
     else:
-        form = LogoutForm()
+        form = UserLogoutForm()
     return render(request, 'name.html', {'form': form})

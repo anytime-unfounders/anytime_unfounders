@@ -1,6 +1,6 @@
 from django import forms
 
-class NameForm(forms.Form):
+class UserRegistrationForm(forms.Form):
     user_first_name = forms.CharField(label='First Name', max_length=200)
     user_last_name = forms.CharField(label='Last Name', max_length=200)
     user_email = forms.EmailField(label='Email Address', max_length=200)
@@ -11,31 +11,36 @@ class NameForm(forms.Form):
     user_postal_code = forms.CharField(label='Postal Code', max_length=20)
     user_province_state = forms.CharField(label='Province/State', max_length=100)
     user_country = forms.CharField(label='Country', max_length=100)
-    user_password = forms.CharField(label='Password', max_length=128, widget=forms.PasswordInput)
-    user_password_confirm = forms.CharField(label='Re-Enter Password', max_length=128, widget=forms.PasswordInput)
-
-    def clean(self): # built-in for checking relationship between fields (check if passwords match)
-        cleaned_data = super().clean()
-        password = cleaned_data.get("user_password")
-        password_confirm = cleaned_data.get("user_password_confirm")
-        if password and password_confirm and password != password_confirm:
-            self.add_error("user_password_confirm", "Passwords do not match")
-        return cleaned_data
-
+    
     class Meta:
         fields = ['user_first_name', 'user_last_name', 'user_email', 'user_phone', 'user_address_line_1', 'user_address_line_2', 'user_city', 'user_postal_code', 'user_province_state', 'user_country', 'user_password', 'user_password_confirm']
 
-class LoginForm(forms.Form):
-    username = forms.CharField(label='Username', max_length=150)
-    password = forms.CharField(label='Password', widget=forms.PasswordInput)
+class UserPasswordCreationForm(forms.Form):
+    user_new_password = forms.CharField(label='Password', max_length=128, widget=forms.PasswordInput)
+    user_confirm_password = forms.CharField(label='Re-Enter Password', max_length=128, widget=forms.PasswordInput)
+
+    def clean(self): # built-in for checking relationship between fields (check if passwords match)
+            cleaned_data = super().clean()
+            password = cleaned_data.get("user_password")
+            password_confirm = cleaned_data.get("user_password_confirm")
+            if password and password_confirm and password != password_confirm:
+                self.add_error("user_password_confirm", "Passwords do not match")
+            return cleaned_data
 
     class Meta:
-        fields = ['username', 'password']
+        fields = ['user_new_password', 'user_confirm_password']
 
-class LogoutForm(forms.Form):
+class UserLoginForm(forms.Form):
+    user_username = forms.CharField(label='Username', max_length=150)
+    user_password = forms.CharField(label='Password', widget=forms.PasswordInput)
+
+    class Meta:
+        fields = ['user_username', 'user_password']
+
+class UserLogoutForm(forms.Form):
     pass
 
-class PasswordResetForm(forms.Form):
+class UserPasswordResetForm(forms.Form):
     email = forms.EmailField(label='Email Address', max_length=200)
 
     class Meta:
