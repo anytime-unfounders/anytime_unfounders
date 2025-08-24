@@ -8,6 +8,9 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # Add backend/ to sys.path so Python can find core/ and all apps
 sys.path.append(os.path.join(BASE_DIR, "backend"))
 
+# make 'backend' a top-level import path so 'core' is importable
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "backend"))
+
 def main():
     """Run administrative tasks."""
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.core.settings")

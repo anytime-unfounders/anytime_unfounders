@@ -11,9 +11,12 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+LOGS_DIR = BASE_DIR / "logs"
+LOGS_DIR.mkdir(exist_ok=True)
 
 
 # Quick-start development settings - unsuitable for production
@@ -26,16 +29,46 @@ SECRET_KEY = 'django-insecure-4kxt-3j(u*5puknh!#aft!d^r8(0@&(fvs$q$(29hk1hm&%_(h
 DEBUG = True
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
-
+SITE_ID=1
 
 # Application definition
-
 INSTALLED_APPS = [
-    "django.contrib.admin","django.contrib.auth","django.contrib.contenttypes",
-    "django.contrib.sessions","django.contrib.messages","django.contrib.staticfiles",
-    "corsheaders","rest_framework",
-    "accounts","user_api","provider_api", "backend.pricing",
+    # Django defaults
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "django.contrib.sites",
+
+    # Third-party
+    "corsheaders",
+    "rest_framework",
+    "rest_framework.authtoken",
+    "axes",
+    "django_otp",
+    "django_otp.plugins.otp_totp",
+    "pgcrypto",
+
+    # Allauth
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",
+
+    # dj-rest-auth (must come AFTER allauth)
+    "dj_rest_auth",
+    "dj_rest_auth.registration",
+
+    # Local apps
+    "accounts",
+    "user_api",
+    "provider_api",
+    "pricing",
 ]
+   
+
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
@@ -44,7 +77,9 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    'allauth.account.middleware.AccountMiddleware',
     "django.contrib.messages.middleware.MessageMiddleware",
+    "django_otp.middleware.OTPMiddleware"
 ]
 
 CORS_ALLOWED_ORIGINS = [
@@ -55,6 +90,8 @@ CORS_ALLOWED_ORIGINS = [
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework.authentication.TokenAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.AllowAny",),
 }
@@ -116,6 +153,14 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Use Argon2 password hasher
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.Argon2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+]
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
@@ -139,10 +184,57 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-#INSTALLED_APPS += ["pricing"]
 
-#PRICING_MODEL_STORE = BASE_DIR / "backend/shared/model_store/pricing"
-#PRICING_DEFAULT_OUTPUT_CURRENCY = "CAD"
+PRICING_MODEL_STORE = BASE_DIR / "backend/shared/model_store/pricing"
+PRICING_DEFAULT_OUTPUT_CURRENCY = "CAD"
 
 OPENAI_MODEL = "gpt-4o-mini" 
 
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'  # or 'Strict'
+
+SECURE_SSL_REDIRECT = True
+SECURE_HSTS_SECONDS = 31536000  # 1 year
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_BROWSER_XSS_FILTER = True
+X_FRAME_OPTIONS = 'DENY'
+
+
+AUTHENTICATION_BACKENDS = [
+    'axes.backends.AxesBackend',
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+AXES_FAILURE_LIMIT = 5
+AXES_COOLOFF_TIME = 1  # 1 hour
+AXES_LOCK_OUT_AT_FAILURE = True
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'security_file': {
+            'level': 'WARNING',
+            'class': 'logging.FileHandler',
+            'filename': str(LOGS_DIR / 'security.log'),  # <- convert Path to string
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django.security': {
+            'handlers': ['security_file', 'console'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+    },
+}
