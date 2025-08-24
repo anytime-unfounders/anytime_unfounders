@@ -1,49 +1,58 @@
-import uuid, json
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.response import Response
-from .models import PendingCheckout
-from core.payments import create_payment_intent, create_setup_intent
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
+from django.contrib.auth import authenticate, login, logout
 
-@api_view(["POST"])
-@permission_classes([AllowAny])
-def prepare_checkout(request):
-    """
-    Called from guest or logged-in state with cart/service info.
-    If not authenticated -> create temp token + stash payload -> ask client to log in.
-    If authenticated -> create PaymentIntent and return client_secret.
-    """
-    payload = request.data  # {service_id, price_cents, currency, ...}
+from .forms import NameForm
+from .forms import LoginForm
+from .forms import LogoutForm
 
-    if not request.user.is_authenticated:
-        token = uuid.uuid4().hex[:32]
-        PendingCheckout.objects.create(temp_token=token, payload=payload)
-        return Response({"requires_auth": True, "resume_token": token}, status=200)
+def register(request):
+    # if this is a POST request we need to process the form data
+    if request.method == 'POST':
+        # create a form instance and populate it with data from the request:
+        form = NameForm(request.POST)
+        # check whether it's valid:
+        if form.is_valid():
+            # process the data in form.cleaned_data (variables can now be used-- save to database, send email, etc.)
+            user_first_name = form.cleaned_data['user_first_name']
+            user_last_name = form.cleaned_data['user_last_name']
+            user_email = form.cleaned_data['user_email']
+            user_phone = form.cleaned_data['user_phone']
+            user_address_line_1 = form.cleaned_data['user_address_line_1']
+            user_address_line_2 = form.cleaned_data['user_address_line_2']
+            user_city = form.cleaned_data['user_city']
+            user_postal_code = form.cleaned_data['user_postal_code']
+            user_province_state = form.cleaned_data['user_province_state']
+            user_country = form.cleaned_data['user_country']
+            # redirect to a page after successfully submitting form:
+            return HttpResponseRedirect('/thanks/') 
 
-    pi = create_payment_intent(request.user, payload["price_cents"], payload.get("currency","cad"))
-    return Response({"client_secret": pi.client_secret, "requires_auth": False})
+    # if any other method, use NameForm to generate form, validate, access cleaned data
+    else:
+        form = NameForm()
 
-@api_view(["POST"])
-@permission_classes([IsAuthenticated])
-def resume_checkout(request):
-    """
-    After login/registration, frontend posts the resume_token to continue.
-    """
-    token = request.data.get("resume_token")
-    try:
-        pc = PendingCheckout.objects.get(temp_token=token)
-    except PendingCheckout.DoesNotExist:
-        return Response({"error":"invalid_token"}, status=400)
+    return render(request, 'name.html', {'form': form}) # return form available as a variable named 'form'
 
-    # attach the checkout to the authed user and proceed
-    pc.user = request.user
-    pc.save(update_fields=["user"])
-    price_cents = pc.payload["price_cents"]
-    pi = create_payment_intent(request.user, price_cents, pc.payload.get("currency","cad"))
-    return Response({"client_secret": pi.client_secret})
+def login(request):
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return HttpResponseRedirect('/thanks/')
+    else:
+        form = LoginForm()
+    return render(request, 'name.html', {'form': form})    
 
-@api_view(["POST"])
-@permission_classes([IsAuthenticated])
-def create_setupintent(request):
-    si = create_setup_intent(request.user)
-    return Response({"client_secret": si.client_secret})
+def logout(request):
+    if request.method == 'POST':
+        form = LogoutForm(request.POST)
+        if form.is_valid():
+            logout(request) # validates empty logout form, calls function to log out user
+            return HttpResponseRedirect('/thanks/')
+    else:
+        form = LogoutForm()
+    return render(request, 'name.html', {'form': form})

@@ -30,6 +30,7 @@ django-axes==8.0.0
 django-cors-headers==4.7.0
 django-cryptography==1.1
 django-formtools==2.5.1
+django-otp==1.6.1
 dnspython==2.7.0
 dotenv==0.9.9
 fake-useragent==2.2.0
