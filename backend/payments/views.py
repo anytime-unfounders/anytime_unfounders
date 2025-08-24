@@ -8,7 +8,7 @@ import stripe
 from django.views.generic.base import TemplateView
 
 class HomePageView(TemplateView):
-    template_name = 'templates/home.html'
+    template_name = 'home.html'
 
 
 @csrf_exempt

@@ -25,6 +25,7 @@ LOGS_DIR.mkdir(exist_ok=True)
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-4kxt-3j(u*5puknh!#aft!d^r8(0@&(fvs$q$(29hk1hm&%_(h'
 STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "sk_test_51RynRHBf33ek24lBZjV43c5DTVMWzzLI6M8DkqdNEc049K422sHuzWE6AFwG8XqIK7gXQ9DWjsG8QSTPAqnE2iWE00op9c1NWr")
+STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY", "pk_test_51RynRHBf33ek24lB8mX4vYH5pXG6mJ3eYJ1oXKXo2Yp0Yt2b7r0gW7y3w5Zkz5yD8Fz4eE6Qk3JqF7jH9h8j3QO00wz5c1L2")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -109,7 +110,7 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['templates'],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

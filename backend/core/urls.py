@@ -27,6 +27,8 @@ urlpatterns = [
     # APIs
     path("api/user/", include("user_api.urls")), # consumer app
     path("api/provider/", include("provider_api.urls")), # provider portal
-    path("", include("backend.payments.urls")), # payments app
+    path("api/payments/", include("backend.payments.urls")), # payments app
+    path('api/auth/registration/', include('dj_rest_auth.registration.urls')),
+
 ]
 
