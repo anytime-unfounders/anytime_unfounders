@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "axes",
     "django_otp",
     "django_otp.plugins.otp_totp",
+    "pgcrypto",
 
     # Allauth
     "allauth",
@@ -65,7 +66,9 @@ INSTALLED_APPS = [
     "user_api",
     "provider_api",
     "pricing",
+    "payments.apps.PaymentsConfig",
 ]
+   
 
 # allauth – email-only login/signup
 ACCOUNT_EMAIL_REQUIRED = True
@@ -100,19 +103,16 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "axes.middleware.AxesMiddleware",
     'allauth.account.middleware.AccountMiddleware',
     "django.contrib.messages.middleware.MessageMiddleware",
-    "django_otp.middleware.OTPMiddleware",
-    "allauth.account.middleware.AccountMiddleware",
+    "django_otp.middleware.OTPMiddleware"
 ]
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://localhost:3000",
 ]
-
-REST_USE_JWT = True
-TOKEN_MODEL = None
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
@@ -135,7 +135,7 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -242,8 +242,6 @@ AXES_FAILURE_LIMIT = 5
 AXES_COOLOFF_TIME = 1  # 1 hour
 AXES_LOCK_OUT_AT_FAILURE = True
 
-LOG_DIR = Path(BASE_DIR) / "logs"
-LOG_DIR.mkdir(parents=True, exist_ok=True)
 
 LOGGING = {
     'version': 1,
@@ -267,12 +265,3 @@ LOGGING = {
         },
     },
 }
-
-# make sure https redirect is off, dev override 
-if DEBUG:
-    SECURE_SSL_REDIRECT = False
-    SECURE_HSTS_SECONDS = 0
-    SESSION_COOKIE_SECURE = False
-    CSRF_COOKIE_SECURE = False
-    # also exempt all API paths from any redirect, just in case
-    SECURE_REDIRECT_EXEMPT = [r"^api/"]

@@ -13,3 +13,12 @@ urlpatterns = [
     path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
 ]
+'''from django.urls import path
+from .views import prepare_checkout, resume_checkout, create_setupintent
+
+urlpatterns = [
+    path("checkout/prepare/", prepare_checkout),
+    path("checkout/resume/", resume_checkout),
+    path("payment/setup-intent/", create_setupintent),
+]
+'''
