@@ -6,6 +6,7 @@ from .forms import ProviderRegistrationForm
 from .forms import ProviderPasswordCreationForm
 from .forms import ProviderLoginForm
 from .forms import ProviderLogoutForm
+from .forms import ServiceCategoryForm
 
 def register(request):
     # if this is a POST request we need to process the form data
@@ -44,6 +45,17 @@ def password_creation(request):
             return HttpResponseRedirect('/thanks/')
     else:
         form = ProviderPasswordCreationForm()
+    return render(request, 'name.html', {'form': form})
+
+def service_category(request):
+    if request.method == 'POST':
+        form = ServiceCategoryForm(request.POST)
+        if form.is_valid():
+            provider_service_category = form.cleaned_data['provider_service_category']
+            # Process the service category selection
+            return HttpResponseRedirect('/thanks/')
+    else:
+        form = ServiceCategoryForm()
     return render(request, 'name.html', {'form': form})
 
 def login(request):

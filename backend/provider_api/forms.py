@@ -30,6 +30,21 @@ class ProviderPasswordCreationForm(forms.Form):
     class Meta:
         fields = ['provider_new_password', 'provider_confirm_password']
 
+class ServiceCategoryForm(forms.Form): # drop-down menu
+    provider_service_category = forms.ChoiceField(label='Service Category', choices=[
+        ('home_emergencies', 'Home Emergencies'), 
+        ('pet_care', 'Pet Care'),
+        ('catering', 'Catering'),
+        ('electricians', "Electricians"),
+        ('locksmiths', "Locksmiths"),
+        ('photographers', "Photographers"),
+        ('tutors', "Tutors"),
+        ('florists', "Florists"),
+    ])
+
+    class Meta:
+        fields = ['provider_service_category']
+
 class ProviderLoginForm(forms.Form):
     provider_username = forms.CharField(label='Username', max_length=150)
     provider_password = forms.CharField(label='Password', widget=forms.PasswordInput)
