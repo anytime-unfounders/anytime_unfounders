@@ -83,8 +83,15 @@ REST_AUTH_REGISTER_SERIALIZERS = {
     "REGISTER_SERIALIZER": "accounts.serializers.EmailRegisterSerializer"
 }
 
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend" 
-ACCOUNT_EMAIL_VERIFICATION = "optional"
+# Email settings (replace example email with our actual business email)
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.example.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'your_email@example.com'
+EMAIL_HOST_PASSWORD = 'your_password'
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'webmaster@example.com'
+
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",

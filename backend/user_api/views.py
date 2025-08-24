@@ -1,9 +1,12 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
+from django.contrib.auth import authenticate, login, logout
 
 from .forms import NameForm
+from .forms import LoginForm
+from .forms import LogoutForm
 
-def get_name(request):
+def register(request):
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
@@ -29,3 +32,27 @@ def get_name(request):
         form = NameForm()
 
     return render(request, 'name.html', {'form': form}) # return form available as a variable named 'form'
+
+def login(request):
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return HttpResponseRedirect('/thanks/')
+    else:
+        form = LoginForm()
+    return render(request, 'name.html', {'form': form})    
+
+def logout(request):
+    if request.method == 'POST':
+        form = LogoutForm(request.POST)
+        if form.is_valid():
+            logout(request) # validates empty logout form, calls function to log out user
+            return HttpResponseRedirect('/thanks/')
+    else:
+        form = LogoutForm()
+    return render(request, 'name.html', {'form': form})
