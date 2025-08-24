@@ -69,31 +69,6 @@ INSTALLED_APPS = [
 ]
    
 
-# allauth – email-only login/signup
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = False
-
-ACCOUNT_AUTHENTICATION_METHOD = "email" # older allauth
-ACCOUNT_LOGIN_METHODS = {"email"}
-
-ACCOUNT_USER_MODEL_USERNAME_FIELD = None
-
-REGISTER_SERIALIZER = "accounts.serializers.EmailRegisterSerializer"
-
-# older style (some installs still expect this mapping)
-REST_AUTH_REGISTER_SERIALIZERS = {
-    "REGISTER_SERIALIZER": "accounts.serializers.EmailRegisterSerializer"
-}
-
-# Email settings (replace example email with our actual business email)
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.example.com'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'your_email@example.com'
-EMAIL_HOST_PASSWORD = 'your_password'
-EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = 'webmaster@example.com'
-
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
@@ -222,10 +197,10 @@ SESSION_COOKIE_HTTPONLY = True
 CSRF_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = 'Lax'  # or 'Strict'
 
-SECURE_SSL_REDIRECT = False
-SECURE_HSTS_SECONDS = 31536000  # 1 year
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-SECURE_HSTS_PRELOAD = True
+SECURE_SSL_REDIRECT = False # Set to True in production
+SECURE_HSTS_SECONDS = 0  # 1 year
+SECURE_HSTS_INCLUDE_SUBDOMAINS = False
+SECURE_HSTS_PRELOAD = False
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_BROWSER_XSS_FILTER = True
 X_FRAME_OPTIONS = 'DENY'
@@ -264,3 +239,6 @@ LOGGING = {
         },
     },
 }
+
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR / 'static']

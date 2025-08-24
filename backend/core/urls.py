@@ -16,14 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from accounts.views import CustomRegisterView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    
-    # auth/registration
     path("api/auth/", include("dj_rest_auth.urls")),
-    path("api/auth/registration/", CustomRegisterView.as_view()),
     path("accounts/", include("allauth.urls")), # add allauth urls
     path("api/user/", include("user_api.urls")),
     path("api/provider/", include("provider_api.urls")),
@@ -31,6 +27,6 @@ urlpatterns = [
     # APIs
     path("api/user/", include("user_api.urls")), # consumer app
     path("api/provider/", include("provider_api.urls")), # provider portal
+    path("", include("backend.payments.urls")), # payments app
 ]
 
-# urlpatterns += [ path("api/pricing/", include("pricing.urls")) ]
