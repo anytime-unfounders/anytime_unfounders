@@ -45,6 +45,12 @@ class ServiceCategoryForm(forms.Form): # drop-down menu
     class Meta:
         fields = ['provider_service_category']
 
+class ProfilePhotoForm(forms.Form):
+    provider_profile_photo = forms.ImageField(label='Add a Profile Photo')
+
+    class Meta:
+        fields = ['provider_profile_photo']
+
 class ProviderLoginForm(forms.Form):
     provider_username = forms.CharField(label='Username', max_length=150)
     provider_password = forms.CharField(label='Password', widget=forms.PasswordInput)
