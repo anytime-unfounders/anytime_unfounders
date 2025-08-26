@@ -1,91 +1,129 @@
-from django.http import HttpResponseRedirect
-from django.shortcuts import render
-from django.contrib.auth import authenticate, login, logout
+# Create your views here.
+# views.py
+from formtools.wizard.views import SessionWizardView
+from django.shortcuts import redirect, render
+from django.urls import reverse
+from .forms import AccountInfoForm, BankingInfoForm, ServiceInfoForm, ProfilePhotosForm
+from .models import User, ServiceProviderProfile
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+from .models import UserLocation
+from django.db.models import F
 
-from .forms import ProviderRegistrationForm
-from .forms import ProviderPasswordCreationForm
-from .forms import ProviderLoginForm
-from .forms import ProviderLogoutForm
-from .forms import ProviderProfileBuilding
+FORMS = [
+    ("account_info", AccountInfoForm),
+    ("banking_info", BankingInfoForm),
+    ("service_info", ServiceInfoForm),
+    ("profile_photos", ProfilePhotosForm),
+]
 
-def register(request):
-    # if this is a POST request we need to process the form data
+TEMPLATES = {
+    "account_info": "registration/account_info.html",
+    "banking_info": "registration/banking_info.html",
+    "service_info": "registration/service_info.html",
+    "profile_photos": "registration/profile_photos.html",
+}
+
+class RegistrationWizard(SessionWizardView):
+    form_list = FORMS
+    template_name = "registration/form_wizard.html"
+    def get_template_names(self):
+        return [TEMPLATES[self.steps.current]]
+    
+    def done(self, form_list, **kwargs):
+        # Process all forms
+        account_data = self.get_cleaned_data_for_step('account_info')
+        banking_data = self.get_cleaned_data_for_step('banking_info')
+        service_data = self.get_cleaned_data_for_step('service_info')
+        photos_data = self.get_cleaned_data_for_step('profile_photos')
+        
+        # Create user
+        user = User.objects.create_user(
+            username=account_data['email'],
+            email=account_data['email'],
+            password=account_data['password1'],
+            first_name=account_data['first_name'],
+            last_name=account_data['last_name'],
+            phone_number=account_data['phone_number'],
+            company_name=account_data['company_name'],
+            is_service_provider=True
+        )
+        
+        # Create service provider profile
+        profile = ServiceProviderProfile(
+            user=user,
+            name_on_card=banking_data['name_on_card'],
+            transit_number=banking_data['transit_number'],
+            institution_number=banking_data['institution_number'],
+            account_number=banking_data['account_number'],
+            service_category=service_data['service_category'],
+            address_line_1=service_data['address_line_1'],
+            address_line_2=service_data['address_line_2'],
+            city=service_data['city'],
+            province_state=service_data['province_state'],
+            postal_code=service_data['postal_code'],
+            country=service_data['country'],
+            service_description=service_data['service_description'],
+            profile_photo=photos_data['profile_photo'],
+            cover_photo=photos_data['cover_photo']
+        )
+        profile.save()
+        
+        return redirect('registration_complete')
+    
+@csrf_exempt
+
+def update_location(request):
     if request.method == 'POST':
-        # create a form instance and populate it with data from the request:
-        form = ProviderRegistrationForm(request.POST)
-        # check whether it's valid:
-        if form.is_valid():
-            # process the data in form.cleaned_data (variables can now be used-- save to database, send email, etc.)
-            provider_first_name = form.cleaned_data['provider_first_name']
-            provider_last_name = form.cleaned_data['provider_last_name']
-            provider_email = form.cleaned_data['provider_email']
-            provider_phone = form.cleaned_data['provider_phone']
-            provider_address_line_1 = form.cleaned_data['provider_address_line_1']
-            provider_address_line_2 = form.cleaned_data['provider_address_line_2']
-            provider_city = form.cleaned_data['provider_city']
-            provider_postal_code = form.cleaned_data['provider_postal_code']
-            provider_province_state = form.cleaned_data['provider_province_state']
-            provider_country = form.cleaned_data['provider_country']
-            # redirect to a page after successfully submitting form:
-            return HttpResponseRedirect('/thanks/') 
+        try:
+            data = json.loads(request.body)
+            latitude = data.get('latitude')
+            longitude = data.get('longitude')
+            
+            loc, _ = UserLocation.objects.get_or_create(user=request.user)
+            loc.latitude = latitude
+            loc.longitude = longitude
+            loc.save()
+            return JsonResponse({'status': 'success'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
+def get_location(request):
+    if request.method == 'GET':
+        try:
+            loc = UserLocation.objects.get(user=request.user)
+            return JsonResponse({
+                'status': 'success',
+                'latitude': loc.latitude,
+                'longitude': loc.longitude
+            })
+        except UserLocation.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Location not found'}, status=404)
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
 
-    # if any other method, use ProviderRegistrationForm to generate form, validate, access cleaned data
-    else:
-        form = ProviderRegistrationForm()
+def nearby_providers(request):
+    user_lat = float(request.GET.get("lat"))
+    user_lon = float(request.GET.get("lon"))
+    radius_km = 10  # e.g. search within 10km
 
-    return render(request, 'name.html', {'form': form}) # return form available as a variable named 'form'
+    providers = ServiceProviderProfile.objects.filter(is_available=True)
 
-def password_creation(request):
-    if request.method == 'POST':
-        form = ProviderPasswordCreationForm(request.POST)
-        if form.is_valid():
-            provider_new_password = form.cleaned_data['provider_new_password']
-            provider_confirm_password = form.cleaned_data['provider_confirm_password']
-            # Process the password change (e.g., update the user's password)
-            return HttpResponseRedirect('/thanks/')
-    else:
-        form = ProviderPasswordCreationForm()
-    return render(request, 'name.html', {'form': form})
+    # Simple distance filter (Haversine formula recommended for accuracy)
+    results = []
+    for p in providers:
+        if p.latitude and p.longitude:
+            # rough distance calc
+            dx = (user_lat - p.latitude) * 111  # km per lat
+            dy = (user_lon - p.longitude) * 111  # km per lon (approx)
+            distance = (dx**2 + dy**2) ** 0.5
+            if distance <= radius_km:
+                results.append({
+                    "id": p.id,
+                    "name": p.user.get_full_name(),
+                    "lat": p.latitude,
+                    "lon": p.longitude,
+                    "service": p.service_description,
+                })
 
-def provider_profile(request):
-    if request.method == 'POST':
-        form = ProviderProfileBuilding(request.POST, request.FILES)
-        if form.is_valid():
-            provider_service_category = form.cleaned_data['provider_service_category']
-            add_profile_picture = form.cleaned_data['add_profile_picture']
-            provider_phone_number = form.cleaned_data['provider_phone_number']
-            provider_email = form.cleaned_data['provider_email']
-            business_name = form.cleaned_data['business_name']
-            provider_bio = form.cleaned_data['provider_bio']
-            add_cover_photo = form.cleaned_data['add_cover_photo']
-            add_videos = form.cleaned_data['add_videos']
-            pricing_structure = form.cleaned_data['pricing_structure']
-            social_media_links = form.cleaned_data['social_media_links']
-            return HttpResponseRedirect('/thanks/')
-    else:
-        form = ProviderProfileBuilding()
-    return render(request, 'name.html', {'form': form})
-
-def login(request):
-    if request.method == 'POST':
-        form = ProviderLoginForm(request.POST)
-        if form.is_valid():
-            provider_username = form.cleaned_data['provider_username']
-            provider_password = form.cleaned_data['provider_password']
-            user = authenticate(request, username=provider_username, password=provider_password)
-            if user is not None:
-                login(request, user)
-                return HttpResponseRedirect('/thanks/')
-    else:
-        form = ProviderLoginForm()
-    return render(request, 'name.html', {'form': form})    
-
-def logout(request):
-    if request.method == 'POST':
-        form = ProviderLogoutForm(request.POST)
-        if form.is_valid():
-            logout(request) # validates empty logout form, calls function to log out user
-            return HttpResponseRedirect('/thanks/')
-    else:
-        form = ProviderLogoutForm()
-    return render(request, 'name.html', {'form': form})
+    return JsonResponse(results, safe=False)

@@ -1,11 +1,10 @@
-from django.http import HttpResponseRedirect
+import json
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
-
-from .forms import UserRegistrationForm
-from .forms import UserPasswordCreationForm
-from .forms import UserLoginForm
-from .forms import UserLogoutForm
+from .forms import UserRegistrationForm, UserPasswordCreationForm, UserLoginForm, UserLogoutForm
+from django.views.decorators.csrf import csrf_exempt
+from .models import UserLocation, ServiceProviderProfile
 
 def register(request):
     # if this is a POST request we need to process the form data
@@ -69,3 +68,46 @@ def logout(request):
     else:
         form = UserLogoutForm()
     return render(request, 'name.html', {'form': form})
+
+@csrf_exempt
+def update_user_location(request):
+    if request.method == "POST" and request.user.is_authenticated:
+        data = json.loads(request.body)
+        lat = data.get("latitude")
+        lon = data.get("longitude")
+
+        loc, _ = UserLocation.objects.get_or_create(user=request.user)
+        loc.latitude = lat
+        loc.longitude = lon
+        loc.save()
+
+        return JsonResponse({"status": "ok"})
+    return JsonResponse({"status": "unauthorized"}, status=401)
+
+def nearby_providers(request):
+    user_location = UserLocation.objects.filter(user=request.user).first()
+    if not user_location:
+        return JsonResponse([], safe=False)
+
+    user_lat, user_lon = user_location.latitude, user_location.longitude
+    radius_km = 10
+
+    providers = ServiceProviderProfile.objects.filter(is_available=True)
+    results = []
+
+    for p in providers:
+        if p.latitude and p.longitude:
+            dx = (user_lat - p.latitude) * 111
+            dy = (user_lon - p.longitude) * 111
+            distance = (dx**2 + dy**2) ** 0.5
+            if distance <= radius_km:
+                results.append({
+                    "id": p.id,
+                    "name": p.user.get_full_name(),
+                    "lat": p.latitude,
+                    "lon": p.longitude,
+                    "service": p.service_description,
+                    "distance": round(distance, 2),
+                })
+
+    return JsonResponse(results, safe=False)
