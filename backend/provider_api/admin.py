@@ -1,3 +1,5 @@
 from django.contrib import admin
+from .models import Provider
 
-# Register your models here.
+admin.site.register(Provider) 
+# register provider model to be visible + manageable on django admin site
