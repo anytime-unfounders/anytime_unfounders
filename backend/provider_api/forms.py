@@ -30,8 +30,8 @@ class ProviderPasswordCreationForm(forms.Form):
     class Meta:
         fields = ['provider_new_password', 'provider_confirm_password']
 
-class ServiceCategoryForm(forms.Form): # drop-down menu
-    provider_service_category = forms.ChoiceField(label='Service Category', choices=[
+class ProviderProfileBuilding(forms.Form):
+    provider_service_category = forms.ChoiceField(label='Service Category', choices=[ # drop-down menu
         ('home_emergencies', 'Home Emergencies'), 
         ('pet_care', 'Pet Care'),
         ('catering', 'Catering'),
@@ -41,6 +41,15 @@ class ServiceCategoryForm(forms.Form): # drop-down menu
         ('tutors', "Tutors"),
         ('florists', "Florists"),
     ])
+    add_profile_picture = forms.ImageField(label='Add a Profile Picture')
+    provider_phone_number = forms.CharField(label='Phone Number', max_length=15)
+    provider_email = forms.EmailField(label='Email Address', max_length=200)
+    business_name = forms.CharField(label='Service Name', max_length=200)
+    provider_bio = forms.CharField(label='A 3-5 Sentence Introduction of Your Service', widget=forms.Textarea) # multi-line text box using Textarea widget
+    add_cover_photo = forms.ImageField(label='Add a Cover Photo')
+    add_videos = forms.FileField(label='Add Video(s)', widget=forms.ClearableFileInput(attrs={'multiple': True}), required=False) # allow multiple file uploads
+    pricing_structure = forms.CharField(label='Hourly Rate (in JSON format)', widget=forms.Textarea) # subject to change, dk how it works yet
+    social_media_links = forms.CharField(label='Social Media Links / Website URL (in JSON format)', widget=forms.Textarea) # also subject to change 
 
     class Meta:
         fields = ['provider_service_category']

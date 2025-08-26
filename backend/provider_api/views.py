@@ -6,7 +6,7 @@ from .forms import ProviderRegistrationForm
 from .forms import ProviderPasswordCreationForm
 from .forms import ProviderLoginForm
 from .forms import ProviderLogoutForm
-from .forms import ServiceCategoryForm
+from .forms import ProviderProfileBuilding
 
 def register(request):
     # if this is a POST request we need to process the form data
@@ -47,15 +47,23 @@ def password_creation(request):
         form = ProviderPasswordCreationForm()
     return render(request, 'name.html', {'form': form})
 
-def service_category(request):
+def provider_profile(request):
     if request.method == 'POST':
-        form = ServiceCategoryForm(request.POST)
+        form = ProviderProfileBuilding(request.POST, request.FILES)
         if form.is_valid():
             provider_service_category = form.cleaned_data['provider_service_category']
-            # Process the service category selection
+            add_profile_picture = form.cleaned_data['add_profile_picture']
+            provider_phone_number = form.cleaned_data['provider_phone_number']
+            provider_email = form.cleaned_data['provider_email']
+            business_name = form.cleaned_data['business_name']
+            provider_bio = form.cleaned_data['provider_bio']
+            add_cover_photo = form.cleaned_data['add_cover_photo']
+            add_videos = form.cleaned_data['add_videos']
+            pricing_structure = form.cleaned_data['pricing_structure']
+            social_media_links = form.cleaned_data['social_media_links']
             return HttpResponseRedirect('/thanks/')
     else:
-        form = ServiceCategoryForm()
+        form = ProviderProfileBuilding()
     return render(request, 'name.html', {'form': form})
 
 def login(request):
