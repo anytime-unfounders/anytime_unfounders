@@ -1,5 +1,3 @@
-"use client";
-
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import AnimatedIntro from "../../components/AnimatedIntro/AnimatedIntro";
@@ -15,15 +13,12 @@ function SocialIcons() {
         rel="noopener noreferrer"
         aria-label="Instagram"
       >
-
         <Image
           src="/sm-icons/instagram-icon.svg"
           alt="Instagram"
           width={28}
           height={28}
         />
-
-
       </a>
       {/* TikTok */}
       <a
@@ -53,7 +48,7 @@ function SocialIcons() {
           height={28}
         />
       </a>
-    </div >
+    </div>
   );
 }
 
@@ -160,10 +155,11 @@ export default function LandingPage() {
 
       {/* Join Us Form (slides in after intro) */}
       <div
-        className={`fixed inset-0 flex items-center justify-center transition-all duration-700 ${introDone
-          ? "translate-y-0 opacity-100"
-          : "translate-y-[100vh] opacity-0 pointer-events-none"
-          }`}
+        className={`fixed inset-0 flex items-center justify-center transition-all duration-700 ${
+          introDone
+            ? "translate-y-0 opacity-100"
+            : "translate-y-[100vh] opacity-0 pointer-events-none"
+        }`}
         style={{ zIndex: 20 }}
       >
         <JoinUsForm />
