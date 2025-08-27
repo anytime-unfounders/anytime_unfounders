@@ -2,7 +2,6 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from pgcrypto.fields import TextPGPSymmetricKeyField
 
 class Profile(models.Model):
     ROLE_CHOICES = (("user","User"),("provider","Provider"))
@@ -13,9 +12,8 @@ class Profile(models.Model):
     stripe_customer_id = models.CharField(max_length=64, null=True, blank=True)
     stripe_account_id  = models.CharField(max_length=64, null=True, blank=True) # providers
     
-    # Optional PII (encrypted at rest)
-    # phone_encrypted = models.CharField(max_length=64, null=True, blank=True)
-    phone_encrypted = TextPGPSymmetricKeyField(null=True, blank=True)
+    #phone_encrypted = TextPGPSymmetricKeyField(null=True, blank=True) <-- encrypted
+    phone_encrypted = models.TextField(null=True, blank=True) 
 
 @receiver(post_save, sender=User)
 def make_profile(sender, instance, created, **kwargs):
