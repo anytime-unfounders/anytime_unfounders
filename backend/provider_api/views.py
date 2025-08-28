@@ -13,6 +13,7 @@ from django.db.models import F
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
+from math import radians, sin, cos, sqrt, atan2
 
 FORMS = [
     ("account_info", AccountInfoForm),
@@ -168,3 +169,37 @@ def nearby_providers(request):
                 })
 
     return JsonResponse(results, safe=False)
+
+def providers_by_category(request):
+    category = request.GET.get("category")  # Get the category from the request
+    user_lat = float(request.GET.get("lat"))
+    user_lon = float(request.GET.get("lon"))
+    radius_km = 10  # search within 10km
+    providers = ServiceProviderProfile.objects.filter(is_available=True, service_category__slug=category)
+
+    results = []
+    for p in providers:
+        if p.latitude and p.longitude:
+            # rough distance calc
+            dx = (user_lat - p.latitude) * 111  # km per lat
+            dy = (user_lon - p.longitude) * 111  # km per lon (approx)
+            distance = (dx**2 + dy**2) ** 0.5
+            if distance <= radius_km:
+                results.append({
+                    "id": p.id,
+                    "name": p.user.get_full_name(),
+                    "lat": p.latitude,
+                    "lon": p.longitude,
+                    "service": p.service_description,
+                })
+    # sort by distance (using haversine formula)
+    results.sort(key=lambda x: haversine(user_lat, user_lon, x["lat"], x["lon"]))
+    return JsonResponse(results, safe=False)
+
+def haversine(lat1, lon1, lat2, lon2):  # Haversine formula to calculate distance for more precision
+    R = 6371  # Earth radius in kilometers
+    dlat = radians(lat2 - lat1)
+    dlon = radians(lon2 - lon1)
+    a = sin(dlat/2) ** 2 + cos(radians(lat1)) * cos(radians(lat2)) * sin(dlon/2) ** 2
+    c = 2 * atan2(sqrt(a), sqrt(1 - a))
+    return R * c
