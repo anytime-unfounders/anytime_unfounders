@@ -6,6 +6,7 @@ from .forms import UserRegistrationForm, UserPasswordCreationForm, UserLoginForm
 from django.views.decorators.csrf import csrf_exempt
 from .models import UserLocation
 from provider_api.models import ServiceProviderProfile
+from django.contrib.auth.models import User
 
 def register(request):
     # if this is a POST request we need to process the form data
@@ -25,6 +26,22 @@ def register(request):
             user_postal_code = form.cleaned_data['user_postal_code']
             user_province_state = form.cleaned_data['user_province_state']
             user_country = form.cleaned_data['user_country']
+
+            user = User.objects.create_user( # create user object
+                username=user_first_name + user_last_name,
+                email=user_email,
+                first_name=user_first_name,
+                last_name=user_last_name,
+                password=form.cleaned_data['user_password'],
+                phone_number=user_phone,
+                address_line_1=user_address_line_1,
+                address_line_2=user_address_line_2,
+                city=user_city,
+                postal_code=user_postal_code,
+                province_state=user_province_state,
+                country=user_country,
+            )
+            login(request, user)  # log the user in after registration
             # redirect to a page after successfully submitting form:
             return HttpResponseRedirect('/thanks/') 
 
@@ -40,8 +57,11 @@ def password_creation(request):
         if form.is_valid():
             user_new_password = form.cleaned_data['user_new_password']
             user_confirm_password = form.cleaned_data['user_confirm_password']
-            # Process the password change (e.g., update the user's password)
-            return HttpResponseRedirect('/thanks/')
+
+            if user_new_password == user_confirm_password:
+                request.user.set_password(user_new_password)
+                request.user.save()
+                return HttpResponseRedirect('/thanks/')
     else:
         form = UserPasswordCreationForm()
     return render(request, 'name.html', {'form': form})
