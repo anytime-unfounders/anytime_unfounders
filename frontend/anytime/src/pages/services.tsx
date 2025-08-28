@@ -7,14 +7,14 @@ import SectionTitle from "../../components/Services/Section";
 export default function Services() {
   // Example data for demonstration
   const categories = [
-    { icon: "🛠️", label: "Home Emergencies", hot: true },
-    { icon: "🏠", label: "Pet Care" },
-    { icon: "👨‍🍳", label: "Catering" },
-    { icon: "🔌", label: "Electricians" },
-    { icon: "🔒", label: "Locksmiths" },
-    { icon: "📷", label: "Photographers" },
-    { icon: "🎓", label: "Tutors", hot: true },
-    { icon: "⚙️", label: "Florists" },
+    { icon: "/service-icons/repair.svg", label: "Emergencies", hot: true },
+    { icon: "/service-icons/petcare.svg", label: "Petcare" },
+    { icon: "/service-icons/chef.svg", label: "Catering" },
+    { icon: "/service-icons/electrician.png", label: "Electricians" },
+    { icon: "/service-icons/locksmith.svg", label: "Locksmiths" },
+    { icon: "/service-icons/photographer.png", label: "Photographers" },
+    { icon: "/service-icons/tutor.png", label: "Tutors", hot: true },
+    { icon: "/service-icons/florist.png", label: "Florists" },
   ];
 
   const servicesNearYou = [
@@ -81,15 +81,19 @@ export default function Services() {
   ];
 
   // Shared card width style
-  const cardWidthClass = "w-full max-w-[420px]";
+  const cardWidthClass = "w-full max-w-[500px]";
 
   return (
-    <div className="bg-[#F6F8FB] min-h-screen w-full px-20 py-20">
-      <div className="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 w-full">
-        {/* Left Grid */}
-        <div className="flex flex-col gap-8 px-6">
-          <Greeting name="Test Account" />
-          <div>
+    <div className="bg-[#F6F8FB] min-h-screen w-full px-15 py-15">
+      <div className="bg-[#F6F8FB] min-h-screen w-full px-15 py-15">
+        {/* Two columns overall: LEFT (all main content) | RIGHT (services near you) */}
+        <div className="grid w-full max-w-[1200px] gap-10 md:grid-cols-2">
+
+          {/* LEFT COLUMN — keep EVERYTHING that should stack vertically here */}
+          <div className="flex flex-col gap-8 px-6 max-w-[700px]">
+
+            <Greeting name="Test Account" />
+
             <div className="flex items-center bg-[#F3F0FF] rounded-lg px-4 py-2 border border-gray-200 mb-4">
               <span className="mr-2 text-lg text-gray-400">🔍</span>
               <input
@@ -98,7 +102,9 @@ export default function Services() {
                 className="w-full bg-transparent outline-none text-gray-700"
               />
             </div>
-            <div className="grid grid-cols-4 gap-4">
+
+            {/* Categories */}
+            <div className="grid grid-cols-4 gap-3">
               {categories.map((cat) => (
                 <ServiceCategoryCard
                   key={cat.label}
@@ -108,36 +114,40 @@ export default function Services() {
                 />
               ))}
             </div>
-          </div>
-          <div>
-            <SectionTitle>My Upcoming Bookings:</SectionTitle>
-            <div className={cardWidthClass}>
-              <BookingCard {...upcomingBooking} onView={() => {}} />
+
+            {/* Upcoming Bookings — now BELOW the icons */}
+            <div>
+              <SectionTitle>My Upcoming Bookings:</SectionTitle>
+              <div className="w-full max-w-[500px]">
+                <BookingCard {...upcomingBooking} onView={() => { }} />
+              </div>
+            </div>
+
+            {/* Continue Browsing */}
+            <div>
+              <SectionTitle>Continue Browsing:</SectionTitle>
+              <div className="grid gap-4">
+                {continueBrowsing.map((service, idx) => (
+                  <div className="w-full max-w-[500px]" key={idx}>
+                    <ServiceCard {...service} onBook={() => { }} />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-          <div>
-            <SectionTitle>Continue Browsing:</SectionTitle>
+
+          {/* RIGHT COLUMN — Services Near You */}
+          <div className="flex flex-col gap-8 px-6">
+            <SectionTitle>Services Near You:</SectionTitle>
             <div className="grid gap-4">
-              {continueBrowsing.map((service, idx) => (
-                <div className={cardWidthClass} key={idx}>
-                  <ServiceCard {...service} onBook={() => {}} />
+              {servicesNearYou.map((service, idx) => (
+                <div className="w-full max-w-[500px]" key={idx}>
+                  <ServiceCard {...service} onBook={() => { }} />
                 </div>
               ))}
             </div>
           </div>
         </div>
-        {/* Right Grid */}
-        <div className="flex flex-col gap-8 px-6">
-          <SectionTitle>Services Near You:</SectionTitle>
-          <div className="grid gap-4">
-            {servicesNearYou.map((service, idx) => (
-              <div className={cardWidthClass} key={idx}>
-                <ServiceCard {...service} onBook={() => {}} />
-              </div>
-            ))}
-          </div>
-        </div>
       </div>
-    </div>
-  );
+    </div>);
 }

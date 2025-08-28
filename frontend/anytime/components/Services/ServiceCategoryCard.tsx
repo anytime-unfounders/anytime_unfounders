@@ -1,21 +1,38 @@
-import React from "react";
+// components/Services/ServiceCategoryCard.tsx
+import Image from "next/image";
 
-interface ServiceCategoryCardProps {
-  icon: React.ReactNode;
+type Props = {
+  icon: string;   // emoji or image path
   label: string;
   hot?: boolean;
-}
+};
 
-export default function ServiceCategoryCard({ icon, label, hot }: ServiceCategoryCardProps) {
+export default function ServiceCategoryCard({ icon, label, hot }: Props) {
+  const isImagePath = icon.startsWith("/");
+
   return (
-    <div className="flex flex-col items-center justify-center bg-white rounded-xl border border-[#E5E5E5] shadow p-4 w-28 h-28 relative">
+    <div className="relative flex flex-col items-center justify-center rounded-xl bg-white p-4 shadow-sm hover:shadow-md transition">
+      {/* 🔥 HOT badge */}
       {hot && (
-        <span className="absolute top-2 left-2 bg-pink-500 text-white text-xs font-bold px-2 py-0.5 rounded">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 bg-red-500 text-white text-xs font-semibold px-2 py-0.5 rounded-md shadow">
           HOT
-        </span>
+        </div>
       )}
-      <div className="text-3xl mb-2">{icon}</div>
-      <span className="text-xs text-gray-700 text-center">{label}</span>
+
+      {isImagePath ? (
+        <Image
+          src={icon}
+          alt={label}
+          width={80}
+          height={80}
+          className="mb-1 object-contain"
+          priority
+        />
+      ) : (
+        <span className="mb-2 text-3xl">{icon}</span>
+      )}
+
+      <span className="text-sm font-regular">{label}</span>
     </div>
   );
 }
