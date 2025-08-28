@@ -4,7 +4,8 @@ from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from .forms import UserRegistrationForm, UserPasswordCreationForm, UserLoginForm, UserLogoutForm
 from django.views.decorators.csrf import csrf_exempt
-from .models import UserLocation, ServiceProviderProfile
+from .models import UserLocation
+from provider_api.models import ServiceProviderProfile
 
 def register(request):
     # if this is a POST request we need to process the form data

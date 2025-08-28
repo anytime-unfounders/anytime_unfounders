@@ -6,8 +6,9 @@ from django.db import models
 from django_cryptography.fields import encrypt
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.contrib.auth.models import User
 from django.conf import settings
+
+User = settings.AUTH_USER_MODEL
 
 class Provider(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -62,7 +63,7 @@ class ServiceProviderProfile(models.Model):
     name_on_card = encrypt(models.CharField(max_length=100))
     transit_number = encrypt(models.CharField(max_length=20))
     institution_number = encrypt(models.CharField(max_length=20))
-    account_number = encrypt(models.CharField(max_length=50))
+    account_number = encrypt(models.CharField(max_length=30))
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
     is_available = models.BooleanField(default=False)
@@ -72,7 +73,7 @@ class ServiceProviderProfile(models.Model):
         return f"{self.user.get_full_name()} - {self.service_category.name if self.service_category else 'No Category'}"
     
 class UserLocation(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True)
