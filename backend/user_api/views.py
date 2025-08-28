@@ -7,6 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import UserLocation
 from provider_api.models import ServiceProviderProfile
 from django.contrib.auth.models import User
+from .models import UserProfile
 
 def register(request):
     # if this is a POST request we need to process the form data
@@ -33,6 +34,9 @@ def register(request):
                 first_name=user_first_name,
                 last_name=user_last_name,
                 password=form.cleaned_data['user_password'],
+            )
+            UserProfile.objects.create( # store extra info in profile model 
+                user=user,
                 phone_number=user_phone,
                 address_line_1=user_address_line_1,
                 address_line_2=user_address_line_2,
