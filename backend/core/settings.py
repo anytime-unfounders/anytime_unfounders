@@ -44,12 +44,14 @@ INSTALLED_APPS = [
     "django.contrib.sites",
 
     # Third-party
-    "corsheaders",
     "rest_framework",
     "rest_framework.authtoken",
     "axes",
     "django_otp",
     "django_otp.plugins.otp_totp",
+    "django_cryptography",
+    "formtools",
+    "corsheaders",
 
     # Allauth
     "allauth",
@@ -252,3 +254,4 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = "anytimeamam@gmail.com"
 EMAIL_HOST_PASSWORD = "mewo ieow vpsc rzaw"
+AUTH_USER_MODEL = "provider_api.User"

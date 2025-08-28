@@ -19,7 +19,6 @@ class Provider(models.Model):
     business_name = models.CharField(max_length=200, blank=True, null=True)
     bio = models.TextField(blank=True, null=True)
     cover_photo = models.ImageField(default='default_cover.jpg', upload_to='provider_cover_photos/', blank=True, null=True)
-    videos = models.ManyToManyField('Video', blank=True)
     pricing_structure = models.JSONField(default=dict, blank=True) # JSON field for saving structured data (complex data)
     social_media_URL = models.JSONField(default=dict, blank=True) # JSON field for saving social media links
 
@@ -76,4 +75,14 @@ class UserLocation(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now=True) 
+
+
+class Video(models.Model):
+    provider = models.ForeignKey(
+        Provider,
+        on_delete=models.CASCADE,
+        related_name="videos"   # Provider.videos now works
+    )
+    title = models.CharField(max_length=255)
+    url = models.URLField()
