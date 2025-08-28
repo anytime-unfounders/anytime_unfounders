@@ -6,7 +6,9 @@ urlpatterns = [
     path('register/', views.register, name='register'),
     path('login/', views.login, name='login'),
     path('logout/', views.logout, name='logout'),
+    path('password_creation/', views.password_creation, name='password_creation'),
     path('accounts/', include('django.contrib.auth.urls')),
+    path('provider_category/', views.ProviderCategoryForm.as_view(), name='provider_category'),
     # password reset tools
     path('password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
     path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),

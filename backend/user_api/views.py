@@ -2,7 +2,7 @@ import json
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
-from .forms import UserRegistrationForm, UserPasswordCreationForm, UserLoginForm, UserLogoutForm
+from .forms import UserRegistrationForm, UserPasswordCreationForm, UserLoginForm, UserLogoutForm, ProviderCategoryForm
 from django.views.decorators.csrf import csrf_exempt
 from .models import UserLocation
 from provider_api.models import ServiceProviderProfile

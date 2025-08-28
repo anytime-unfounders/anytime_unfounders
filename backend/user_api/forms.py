@@ -1,4 +1,5 @@
 from django import forms
+from provider_api.models import ServiceCategory
 
 class UserRegistrationForm(forms.Form):
     user_first_name = forms.CharField(label='First Name', max_length=200)
@@ -45,3 +46,15 @@ class UserPasswordResetForm(forms.Form):
 
     class Meta:
         fields = ['email']
+
+class ProviderCategoryForm(forms.Form):  # Form for selecting service category (subcategories)
+    provider_service_category = forms.ModelChoiceField(
+        queryset=ServiceCategory.objects.all(),
+        label='Service Category',
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    latitude = forms.FloatField(label='Latitude', required=False)
+    longitude = forms.FloatField(label='Longitude', required=False)
+
+    class Meta:
+        fields = ['provider_service_category', 'latitude', 'longitude']
