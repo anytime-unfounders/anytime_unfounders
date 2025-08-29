@@ -124,7 +124,6 @@ pyreq==1.2.0
 PySocks==1.7.1
 python-dateutil==2.9.0.post0
 python-dotenv==1.1.1
-python-keyczar==0.716
 pytz==2025.2
 PyYAML==6.0.2
 queuelib==1.8.0
