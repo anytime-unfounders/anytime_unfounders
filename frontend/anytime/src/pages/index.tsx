@@ -141,6 +141,7 @@ export default function LandingPage() {
       {/* Parallax Blobs removed, now handled by Bg component */}
 
       {/* Animated Intro (left side) */}
+
       <div
         className={
           introDone
@@ -153,11 +154,10 @@ export default function LandingPage() {
 
       {/* Join Us Form (slides in after intro) */}
       <div
-        className={`fixed inset-0 flex items-center justify-center transition-all duration-700 ${
-          introDone
-            ? "translate-y-0 opacity-100"
-            : "translate-y-[100vh] opacity-0 pointer-events-none"
-        }`}
+        className={`fixed inset-0 flex items-center justify-center transition-all duration-700 ${introDone
+          ? "translate-y-0 opacity-100"
+          : "translate-y-[100vh] opacity-0 pointer-events-none"
+          }`}
         style={{ zIndex: 20 }}
       >
         <JoinUsForm />

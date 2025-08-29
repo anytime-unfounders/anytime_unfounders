@@ -14,66 +14,90 @@ export default function Services() {
     { icon: "/service-icons/locksmith.svg", label: "Locksmiths" },
     { icon: "/service-icons/photographer.png", label: "Photographers" },
     { icon: "/service-icons/tutor.png", label: "Tutors", hot: true },
-    { icon: "/service-icons/florist.png", label: "Florists" },
+    { icon: "/service-icons/flower.svg", label: "Florists" },
   ];
 
   const servicesNearYou = [
     {
-      image: "/file.svg",
+      image: "/service-photos/dog.jpg",
       title: "Dog Walker",
       provider: "Mary Cape",
       experience: "5 years experience",
       rating: 4.1,
       price: "$10/h",
-      tag: "Off 15%",
+      tag: "-15%",
       tagColor: "bg-pink-400",
     },
     {
-      image: "/motorcycle_components/right-wheel.svg",
+      image: "/service-photos/electrician.jpg",
       title: "Electrician",
       provider: "Samuel Lee",
       experience: "10 years experience",
       rating: 5.0,
       price: "$50/h",
     },
+    {
+      image: "/service-photos/babysitter.jpg",
+      title: "Babysitter",
+      provider: "Seraphina Gomez",
+      experience: "20 years experience",
+      rating: 5.0,
+      price: "$28/h",
+    },
+    {
+      image: "/service-photos/dogtrainer.jpg",
+      title: "Dog Trainer",
+      provider: "Lily Hemmingway",
+      experience: "35 years experience",
+      rating: 5.0,
+      price: "$50/h",
+    },
+    {
+      image: "/service-photos/babysitter2.jpg",
+      title: "Babysitter",
+      provider: "Sarah Johnson",
+      experience: "2 years experience",
+      rating: 3.0,
+      price: "$18/h",
+    },
   ];
 
   const upcomingBooking = {
-    image: "/motorcycle_components/letters.svg",
+    image: "/service-photos/chef.jpg",
     title: "Private Chef",
-    provider: "Gordon Ramsay",
+    provider: "Marques Jacob",
     experience: "10 years experience",
     rating: 5.0,
-    price: "$1k/h",
+    price: "$460/h",
     tag: "Verified",
     tagColor: "bg-pink-400",
   };
 
   const continueBrowsing = [
     {
-      image: "/motorcycle_components/right-wheel.svg",
-      title: "Electrician",
-      provider: "Samuel Lee",
-      experience: "10 years experience",
-      rating: 5.0,
-      price: "$50/h",
+      image: "/service-photos/barista.jpg",
+      title: "Personal Barista",
+      provider: "Tiffony Blyeur",
+      experience: "5 years experience",
+      rating: 4.2,
+      price: "$10/h",
       tag: "Verified",
       tagColor: "bg-pink-400",
     },
     {
-      image: "/motorcycle_components/right-wheel.svg",
-      title: "Electrician",
-      provider: "Samuel Lee",
-      experience: "10 years experience",
-      rating: 5.0,
-      price: "$50/h",
+      image: "/service-photos/chef2.jpg",
+      title: "Personal Chef",
+      provider: "Susanne Baker",
+      experience: "3 years experience",
+      rating: 4.9,
+      price: "$23/h",
     },
     {
-      image: "/motorcycle_components/right-wheel.svg",
-      title: "Electrician",
-      provider: "Samuel Lee",
-      experience: "10 years experience",
-      rating: 5.0,
+      image: "/service-photos/chef3.jpg",
+      title: "Nutritionist",
+      provider: "Sophia Turner",
+      experience: "17 years experience",
+      rating: 4.0,
       price: "$50/h",
       tag: "HOT",
       tagColor: "bg-pink-400",
@@ -84,13 +108,16 @@ export default function Services() {
   const cardWidthClass = "w-full max-w-[500px]";
 
   return (
-    <div className="bg-[#F6F8FB] min-h-screen w-full px-15 py-15">
-      <div className="bg-[#F6F8FB] min-h-screen w-full px-15 py-15">
+    <div className="bg-[#F6F8FB] min-h-screen w-full px-10 py-10">
+      <div className="bg-[#F6F8FB] min-h-screen w-full px-10 py-10">
         {/* Two columns overall: LEFT (all main content) | RIGHT (services near you) */}
-        <div className="grid w-full max-w-[1200px] gap-10 md:grid-cols-2">
+        <div className="grid w-full max-w-none gap-5 md:grid-cols-[1.35fr_1.75fr] items-start max-md:grid-cols-1">
+
+
+
 
           {/* LEFT COLUMN — keep EVERYTHING that should stack vertically here */}
-          <div className="flex flex-col gap-8 px-6 max-w-[700px]">
+          <div className="flex flex-col gap-8 px-6 ">
 
             <Greeting name="Test Account" />
 
@@ -128,8 +155,8 @@ export default function Services() {
               <SectionTitle>Continue Browsing:</SectionTitle>
               <div className="grid gap-4">
                 {continueBrowsing.map((service, idx) => (
-                  <div className="w-full max-w-[500px]" key={idx}>
-                    <ServiceCard {...service} onBook={() => { }} />
+                  <div className="w-full max-w-[700px]" key={idx}>
+                    <ServiceCard {...service} onBook={() => { }} smallButton={true} shortCard={true} />
                   </div>
                 ))}
               </div>
@@ -137,16 +164,17 @@ export default function Services() {
           </div>
 
           {/* RIGHT COLUMN — Services Near You */}
-          <div className="flex flex-col gap-8 px-6">
-            <SectionTitle>Services Near You:</SectionTitle>
-            <div className="grid gap-4">
+          <div className="flex flex-col gap-2 px-4 w-full">
+            <SectionTitle>
+              <span className="text-xl font-bold">Services Near You:</span></SectionTitle>
+            <div className="grid gap-4 w-full">
               {servicesNearYou.map((service, idx) => (
-                <div className="w-full max-w-[500px]" key={idx}>
-                  <ServiceCard {...service} onBook={() => { }} />
-                </div>
+                <ServiceCard key={idx} {...service} onBook={() => { }} />
               ))}
             </div>
           </div>
+
+
         </div>
       </div>
     </div>);
