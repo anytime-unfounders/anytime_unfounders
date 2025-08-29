@@ -14,7 +14,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from math import radians, sin, cos, sqrt, atan2
-from django.utils import timezone
+from django.utils import timezone, timedelta
 from user_api.models import Booking
 from .forms import ProviderBookingResponseForm
 
@@ -223,3 +223,14 @@ def respond_to_booking(request, booking_id): # view for provider to respond to b
         form = ProviderBookingResponseForm()
 
     return render(request, 'respond_to_booking.html', {'form': form, 'booking': booking})
+
+def ghosted_booking(request, booking_id):
+    booking = Booking.objects.filter(id=booking_id, provider__user=request.user).first()
+    if not booking: # if booking not found
+        return JsonResponse({"error": "Booking not found or you are not authorized to ghost."}, status=404)
+    
+    if booking.provider_responded_at + timedelta(hours=3) < timezone.now(): # if provider hasn't responded in 3 hours
+        booking.provider.ghosted = True # mark provider as ghosted
+        booking.provider.save() # save the provider's ghosted status
+        return JsonResponse({"status": "ok"})
+    return JsonResponse({"status": "not_ghosted"}, status=400) # provider has already responded

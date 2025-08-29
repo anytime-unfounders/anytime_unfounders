@@ -9,7 +9,11 @@ urlpatterns = [
     path('password_creation/', views.password_creation, name='password_creation'),
     path('accounts/', include('django.contrib.auth.urls')),
     path('provider_category/', views.ProviderCategoryForm.as_view(), name='provider_category'),
-    path('book_service/', views.book_service, name='book_service'),
+    path('book_provider/', views.book_provider, name='book_provider'),
+    path('try_again/', views.try_again, name='try_again'),
+    path('provider_not_responding/', views.provider_not_responding, name='provider_not_responding'),
+    path('booking_status/', views.booking_status, name='booking_status'),
+    path('cancel_booking/', views.cancel_booking, name='cancel_booking'),
     # password reset tools
     path('password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
     path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
