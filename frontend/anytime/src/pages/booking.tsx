@@ -1,6 +1,8 @@
+import { useRouter } from "next/router";
 import Image from "next/image";
 
 export default function Booking() {
+    const router = useRouter();
     return (
         <div className="min-h-screen bg-[#F6F8FB] flex flex-col">
 
@@ -105,7 +107,7 @@ export default function Booking() {
                             </div>
                         </div>
                         <div className="flex justify-end mt-2">
-                            <button className="bg-[#6C38B8] text-white px-8 py-2 rounded-full font-bold text-sm shadow">BOOK</button>
+                            <button className="bg-[#6C38B8] text-white px-8 py-2 rounded-full font-bold text-sm shadow" onClick={() => router.push("/thanksforbooking")}>BOOK</button>
                         </div>
                     </div>
                 </div>
