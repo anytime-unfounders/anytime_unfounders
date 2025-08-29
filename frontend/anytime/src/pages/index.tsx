@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 import AnimatedIntro from "../../components/AnimatedIntro/AnimatedIntro";
 
 // Social icons (using SVGs for simplicity)
@@ -54,6 +55,7 @@ function SocialIcons() {
 
 // Join Us form component
 function JoinUsForm() {
+  const router = useRouter();
   const [submitted, setSubmitted] = useState(false);
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
@@ -116,8 +118,8 @@ function JoinUsForm() {
         <SocialIcons />
 
         <a
-          className="flex justify-center text-[#6C38B8] underline-offset-2 hover:underline"
-          href="/signin"
+          className="flex justify-center text-[#6C38B8] underline-offset-2 hover:underline cursor-pointer"
+          onClick={() => router.push("/signin")}
         >
           Sign In Now
         </a>
