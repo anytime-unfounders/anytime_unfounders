@@ -3,6 +3,8 @@ import Image from "next/image";
 export default function Booking() {
     return (
         <div className="min-h-screen bg-[#F6F8FB] flex flex-col">
+
+
             {/* NavBar */}
             <div className="w-full bg-white flex items-center justify-between px-8 py-4 shadow-gray-500/60 shadow-lg">
                 {/* Logo and Brand */}
@@ -18,23 +20,25 @@ export default function Booking() {
                 </button>
             </div>
 
-
             {/* Header Section */}
-            <section className="bg-white pt-12 pb-8 flex flex-col items-center">
+            <section className="bg-white pt-12  flex flex-col items-center">
+
                 <h1 className="text-4xl font-bold mb-2 text-center">Let’s Book Your Service.</h1>
                 <p className="text-lg text-gray-600 mb-6 text-center">Browse trusted providers and book instantly.</p>
-                <div className="mb-[-60px]">
-                    <Image src="/floatingguy.png" alt="Booking Illustration" width={220} height={160} />
+                {/* Floating Guy at Top */}
+                <div className="w-full flex justify-center pt-8 ">
+                    <Image src="/floatingguy.png" alt="Booking Illustration" width={400} height={600} />
                 </div>
             </section>
 
             {/* Main Booking Card Section */}
             <section className="bg-[#E6E1F7] py-16 flex flex-col items-center">
+
                 <div className="bg-white rounded-xl shadow-xl p-8 flex flex-row gap-8 max-w-3xl w-full">
                     {/* Left: Provider Info */}
                     <div className="flex flex-col items-start w-[260px]">
                         <div className="flex items-center gap-4 mb-2">
-                            <Image src="/service-photos/dog.jpg" alt="Provider" width={70} height={70} className="rounded-full object-cover" />
+                            <Image src="/service-icons/mary.png" alt="Provider" width={70} height={70} className="rounded-full object-cover" />
                             <div>
                                 <div className="text-xl font-bold">Dog Walker</div>
                                 <div className="text-sm text-gray-500">by Mary Cape</div>
