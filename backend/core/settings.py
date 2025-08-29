@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
+from celery.schedules import crontab
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -255,3 +256,13 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = "anytimeamam@gmail.com"
 EMAIL_HOST_PASSWORD = "mewo ieow vpsc rzaw"
 AUTH_USER_MODEL = "provider_api.User"
+
+# Celery Configuration
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_BEAT_SCHEDULE = {
+    'check-ghosted-bookings': { # scheduled task to check for ghosted bookings every 5 minutes, automated
+        'task': 'user_api.tasks.check_ghosted_bookings',
+        'schedule': crontab(minute='*/5'),  # every 5 minutes
+    },
+}
