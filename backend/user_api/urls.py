@@ -9,6 +9,7 @@ urlpatterns = [
     path('password_creation/', views.password_creation, name='password_creation'),
     path('accounts/', include('django.contrib.auth.urls')),
     path('provider_category/', views.ProviderCategoryForm.as_view(), name='provider_category'),
+    path('book_service/', views.book_service, name='book_service'),
     # password reset tools
     path('password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
     path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),

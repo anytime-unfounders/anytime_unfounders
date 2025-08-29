@@ -1,6 +1,6 @@
 import json
 from django.http import HttpResponseRedirect, JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from .forms import UserRegistrationForm, UserPasswordCreationForm, UserLoginForm, UserLogoutForm, ProviderCategoryForm
 from django.views.decorators.csrf import csrf_exempt
@@ -8,6 +8,9 @@ from .models import UserLocation
 from provider_api.models import ServiceProviderProfile
 from django.contrib.auth.models import User
 from .models import UserProfile
+from .forms import SelectServiceCategoryForm
+from .forms import BookingForm
+from .models import Booking
 
 def register(request):
     # if this is a POST request we need to process the form data
@@ -136,3 +139,16 @@ def nearby_providers(request):
                 })
 
     return JsonResponse(results, safe=False)
+
+def book_provider(request):
+    if request.method == "POST":
+        form = BookingForm(request.POST)
+        if form.is_valid():
+            booking = form.save(commit=False)
+            booking.user = request.user
+            booking.status = "pending"
+            booking.save()
+            return redirect('/booking_success/')
+    else:
+        form = BookingForm()
+    return render(request, 'book_provider.html', {'form': form})
