@@ -14,6 +14,8 @@ from .models import Booking
 from provider_api.views import haversine # ensure haversine function is defined or imported
 from provider_api.forms import ProviderBookingResponseForm
 from provider_api.views import respond_to_booking, ghosted_booking
+from django.utils import timezone
+from payments.views import banking_info
 
 def register(request):
     # if this is a POST request we need to process the form data
@@ -59,7 +61,7 @@ def register(request):
     else:
         form = UserRegistrationForm()
 
-    return render(request, 'name.html', {'form': form}) # return form available as a variable named 'form'
+    return redirect('/password_creation/') # redirect to password creation page
 
 def password_creation(request):
     if request.method == 'POST':
@@ -74,7 +76,7 @@ def password_creation(request):
                 return HttpResponseRedirect('/thanks/')
     else:
         form = UserPasswordCreationForm()
-    return render(request, 'name.html', {'form': form})
+    return redirect('/banking_info/')
 
 def login(request):
     if request.method == 'POST':
@@ -144,14 +146,14 @@ def nearby_providers(request):
 def book_provider(request): # view for users to book a service provider
     if request.method == "POST": # check if the request method is POST
         form = InstantBookingChoiceForm(request.POST) # create form for user's instant booking choice
-        instant_booking = form.cleaned_data.get('instant_booking') == 'on' # check if instant booking is enabled
+        instant_booking = form.cleaned_data.get('instant_booking') # check if instant booking is enabled
         if form.is_valid(): # validate the form
             if instant_booking: # if instant booking is enabled
                 booking = form.save(commit=False) # create booking instance but don't save yet
                 booking.user = request.user # assign the logged-in user to the booking
                 booking.status = "confirmed" # set booking status to confirmed
                 booking.save() # save
-                return redirect('/instant_booking_success/') # redirect to instant booking success page
+                return redirect('/booking_success/') # redirect to instant booking success page
             else: # if no instant booking
                 booking_form = BookingForm(request.POST) # create a booking form instance with POST data
                 if booking_form.is_valid():
@@ -187,17 +189,26 @@ def provider_not_responding(request): # redirect from book_provider when provide
             return redirect('/cancel_booking/') # redirect to cancel_booking page
     return render(request, 'provider_not_responding.html')
 
-def booking_status(request, booking): # view to check booking status, redirected from provider_not_responding or book_provider
+def booking_status(request, booking_id): # view to check booking status, redirected from provider_not_responding or book_provider
+    booking = Booking.objects.get(id=booking_id, user=request.user) # get booking object for the logged-in user based on booking_id
     if request.method == 'POST':
         if 'refresh' in request.POST: # if user chooses to refresh booking status
             return redirect('/booking_status/') # redirect back to booking status page
         elif 'cancel' in request.POST: # if user chooses to cancel booking
             return redirect('/cancel_booking/') # redirect to cancel_booking page
-
-        if ghosted_booking(request):
+            
+        if ghosted_booking(booking):
             booking.status = 'ghosted'
             booking.save()
             return redirect('/provider_not_responding/') # loop back to provider_not_responding page if booking is ghosted again
+        else:
+            booking.status = 'confirmed'
+            booking.save()
+            return redirect('/booking_success/') # redirect to booking success page if booking is not ghosted
+
+
+def booking_success(request): # view for successful booking
+    return render(request, 'booking_success.html')
 
 def cancel_booking(request): # view to cancel a booking, redirected from provider_not_responding
     if request.method == 'POST':
@@ -208,7 +219,18 @@ def cancel_booking(request): # view to cancel a booking, redirected from provide
                 booking.status = 'cancelled'
                 booking.save()
         return redirect('/')  # redirect to home page
-    return render(request, 'home.html')
+    return render(request, 'cancel_booking.html')
+
+def homepage(request):
+    upcoming_bookings = []
+    if request.user.is_authenticated:
+        upcoming_bookings = Booking.objects.filter(
+            user=request.user, 
+            service_date__gte=timezone.now(),
+            status__in=['confirmed', 'pending']
+        ).order_by('service_date')[:5]  # limit to next 5 bookings
+
+    return render(request, 'homepage.html', {'upcoming_bookings': upcoming_bookings})
 
 def provider_requests(request): # connection to provider_api: view for providers to see booking requests, sorted by distance if location available
     provider = ServiceProviderProfile.objects.filter(user=request.user).first() # get provider profile for logged-in user
@@ -225,7 +247,7 @@ def provider_requests(request): # connection to provider_api: view for providers
             "user_name": booking.user.get_full_name(),
             "service_date": booking.service_date,
             "status": booking.status,
-            "distance": round(distance, 2) if booking.user.user_location else None,
+            "distance": round(distance, 2) if distance is not None else None,
         })
     results.sort(key=lambda x: (x['distance'] is None, x['distance'])) # sort results by distance
     return render(request, 'provider_requests.html', {'bookings': results}) # render the provider requests page with the sorted bookings
