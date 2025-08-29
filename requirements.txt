@@ -44,7 +44,7 @@ django-formtools==2.5.1
 django-otp==1.6.1
 django-pgcrypto-fields==2.6.0
 django-utils==0.0.2
-Django==5.2.5
+Django==4.2.23
 djangorestframework_simplejwt==5.5.1
 djangorestframework==3.16.1
 dnspython==2.7.0
