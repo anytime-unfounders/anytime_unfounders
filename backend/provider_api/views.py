@@ -14,6 +14,9 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from math import radians, sin, cos, sqrt, atan2
+from django.utils import timezone
+from user_api.models import Booking
+from .forms import ProviderBookingResponseForm
 
 FORMS = [
     ("account_info", AccountInfoForm),
@@ -203,3 +206,20 @@ def haversine(lat1, lon1, lat2, lon2):  # Haversine formula to calculate distanc
     a = sin(dlat/2) ** 2 + cos(radians(lat1)) * cos(radians(lat2)) * sin(dlon/2) ** 2
     c = 2 * atan2(sqrt(a), sqrt(1 - a))
     return R * c
+
+def respond_to_booking(request, booking_id): # view for provider to respond to booking request
+    booking = Booking.objects.filter(id=booking_id, provider__user=request.user).first()
+    if not booking:
+        return JsonResponse({"error": "Booking not found or you are not authorized to respond."}, status=404)
+
+    if request.method == "POST":
+        form = ProviderBookingResponseForm(request.POST)
+        if form.is_valid():
+            booking.provider_responded_at = timezone.now()
+            booking.status = form.cleaned_data['status']
+            booking.save()
+            return JsonResponse({"status": "ok"})
+    else:
+        form = ProviderBookingResponseForm()
+
+    return render(request, 'respond_to_booking.html', {'form': form, 'booking': booking})

@@ -46,8 +46,6 @@ class ProviderRegistrationForm(forms.Form):
     class Meta:
         fields = ['user_first_name', 'user_last_name', 'user_email', 'user_phone', 'user_address_line_1', 'user_address_line_2', 'user_city', 'user_postal_code', 'user_province_state', 'user_country', 'user_password', 'user_password_confirm']
 
-
-
 class ProviderPasswordCreationForm(forms.Form):
     provider_new_password = forms.CharField(label='Password', max_length=128, widget=forms.PasswordInput)
     provider_confirm_password = forms.CharField(label='Re-Enter Password', max_length=128, widget=forms.PasswordInput)
@@ -192,3 +190,11 @@ class ProfilePhotosForm(forms.ModelForm):
         fields = ['email']
         model = ServiceProviderProfile
         fields = ['profile_photo', 'cover_photo']
+
+class ProviderBookingResponseForm(forms.Form): # Form for provider to respond to booking requests
+    STATUS_CHOICES = [
+        ('confirmed', 'Confirm'),
+        ('rejected', 'Reject'),
+        ('pending', 'Pending'),
+    ]
+    status = forms.ChoiceField(choices=STATUS_CHOICES, label="Booking Response")

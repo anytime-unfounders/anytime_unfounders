@@ -66,10 +66,11 @@ class SelectServiceCategoryForm(forms.ModelForm): # model form for saving direct
         model = SelectServiceCategory
         fields = ['selected_category']
 
-class BookingForm(forms.ModelForm):
+class InstantBookingChoiceForm(forms.Form):
     # use BooleanField for instant booking
-    instant_booking = forms.BooleanField(required=True, label="Instant Booking?")
-    
-    class Meta:
+    instant_booking = forms.BooleanField(required=False, label="Instant Booking?")
+
+class BookingForm(forms.ModelForm): # form for booking a service, using model form from Booking
+    class Meta: # specify model and fields to include in the form
         model = Booking
         fields = ['provider', 'service_category', 'service_date', 'scheduled_time', 'notes']

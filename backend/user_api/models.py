@@ -49,5 +49,8 @@ class Booking(models.Model):
     status = models.CharField(max_length=20, choices=[('pending', 'Pending'), ('confirmed', 'Confirmed'), ('completed', 'Completed'), ('canceled', 'Canceled')], default='pending')
     notes = models.TextField(blank=True, null=True)
 
+    request_sent_at = models.DateTimeField(auto_now_add=True) # timestamp when booking request was sent, set automatically
+    provider_responded_at = models.DateTimeField(null=True, blank=True) # timestamp when provider responded, can be null initially
+
     def __str__(self):
         return f"Booking by {self.user.username} with {self.provider.user.get_full_name()} on {self.service_date.strftime('%Y-%m-%d %H:%M')} - Status: {self.status}"

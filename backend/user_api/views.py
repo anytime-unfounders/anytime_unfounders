@@ -8,9 +8,12 @@ from .models import UserLocation
 from provider_api.models import ServiceProviderProfile # import provider profile model
 from django.contrib.auth.models import User
 from .models import UserProfile
+from .forms import InstantBookingChoiceForm
 from .forms import BookingForm
 from .models import Booking
 from provider_api.views import haversine # ensure haversine function is defined or imported
+from provider_api.forms import ProviderBookingResponseForm
+from provider_api.views import respond_to_booking
 
 def register(request):
     # if this is a POST request we need to process the form data
@@ -140,7 +143,7 @@ def nearby_providers(request):
 
 def book_provider(request): # view for users to book a service provider
     if request.method == "POST": # check if the request method is POST
-        form = BookingForm(request.POST) # create a booking form instance with POST data
+        form = InstantBookingChoiceForm(request.POST) # create form for user's instant booking choice
         instant_booking = form.cleaned_data.get('instant_booking') == 'on' # check if instant booking is enabled
         if form.is_valid(): # validate the form
             if instant_booking: # if instant booking is enabled
@@ -149,11 +152,7 @@ def book_provider(request): # view for users to book a service provider
                 booking.status = "confirmed" # set booking status to confirmed
                 booking.save() # save
                 return redirect('/instant_booking_success/') # redirect to instant booking success page
-            booking = form.save(commit=False) # create booking instance but don't save yet
-            booking.user = request.user # assign the logged-in user to the booking
-            booking.status = "pending" # set booking status to pending
-            booking.save()
-            return redirect('/booking_success/') # redirect to booking success page
+            
     else:
         form = BookingForm()
     return render(request, 'book_provider.html', {'form': form})
