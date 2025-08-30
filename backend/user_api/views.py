@@ -8,7 +8,6 @@ from .models import UserLocation
 from provider_api.models import ServiceProviderProfile # import provider profile model
 from django.contrib.auth.models import User
 from .models import UserProfile
-from .forms import InstantBookingChoiceForm
 from .forms import BookingForm
 from .models import Booking
 from provider_api.views import haversine # ensure haversine function is defined or imported
