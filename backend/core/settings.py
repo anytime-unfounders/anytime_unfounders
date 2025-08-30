@@ -21,6 +21,7 @@ LOGS_DIR.mkdir(exist_ok=True)
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+#AUTH_USER_MODEL = "provider_api.User"
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -52,7 +53,7 @@ INSTALLED_APPS = [
     "axes",
     "django_otp",
     "django_otp.plugins.otp_totp",
-    "django_cryptography",
+    "fernet_fields",
     "formtools",
     "corsheaders",
 
@@ -67,7 +68,7 @@ INSTALLED_APPS = [
     "dj_rest_auth.registration",
 
     # Local apps
-    "accounts",
+    "backend.accounts",
     "user_api",
     "provider_api",
     "pricing",
@@ -256,7 +257,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = "anytimeamam@gmail.com"
 EMAIL_HOST_PASSWORD = "mewo ieow vpsc rzaw"
-# AUTH_USER_MODEL = "provider_api.User"
+
 
 # Celery Configuration
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
