@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 import AnimatedIntro from "../../components/AnimatedIntro/AnimatedIntro";
 
 // Social icons (using SVGs for simplicity)
@@ -54,6 +55,7 @@ function SocialIcons() {
 
 // Join Us form component
 function JoinUsForm() {
+  const router = useRouter();
   const [submitted, setSubmitted] = useState(false);
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
@@ -116,8 +118,8 @@ function JoinUsForm() {
         <SocialIcons />
 
         <a
-          className="flex justify-center text-[#6C38B8] underline-offset-2 hover:underline"
-          href="/signin"
+          className="flex justify-center text-[#6C38B8] underline-offset-2 hover:underline cursor-pointer"
+          onClick={() => router.push("/signin")}
         >
           Sign In Now
         </a>
@@ -141,6 +143,7 @@ export default function LandingPage() {
       {/* Parallax Blobs removed, now handled by Bg component */}
 
       {/* Animated Intro (left side) */}
+
       <div
         className={
           introDone
@@ -153,11 +156,10 @@ export default function LandingPage() {
 
       {/* Join Us Form (slides in after intro) */}
       <div
-        className={`fixed inset-0 flex items-center justify-center transition-all duration-700 ${
-          introDone
-            ? "translate-y-0 opacity-100"
-            : "translate-y-[100vh] opacity-0 pointer-events-none"
-        }`}
+        className={`fixed inset-0 flex items-center justify-center transition-all duration-700 ${introDone
+          ? "translate-y-0 opacity-100"
+          : "translate-y-[100vh] opacity-0 pointer-events-none"
+          }`}
         style={{ zIndex: 20 }}
       >
         <JoinUsForm />

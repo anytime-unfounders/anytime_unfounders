@@ -1,6 +1,4 @@
-import React from "react";
-
-interface ServiceCardProps {
+type ServiceCardProps = {
   image: string;
   title: string;
   provider: string;
@@ -10,7 +8,9 @@ interface ServiceCardProps {
   tag?: string;
   tagColor?: string;
   onBook?: () => void;
-}
+  smallButton?: boolean;
+  shortCard?: boolean;
+};
 
 export default function ServiceCard({
   image,
@@ -20,44 +20,59 @@ export default function ServiceCard({
   rating,
   price,
   tag,
-  tagColor = "bg-pink-400",
+  tagColor = "bg-pink-500",
   onBook,
+  smallButton,
+  shortCard,
 }: ServiceCardProps) {
   return (
-    <div className="flex bg-white rounded-xl shadow border border-[#E5E5E5] p-3 mb-4 items-center relative max-w-md">
+    <div className={`flex w-full items-stretch rounded-2xl bg-[#F1E8FF] ${shortCard ? "h-32" : "h-44"}`}>
+      {/* Left: image fills full card height */}
       <img
         src={image}
         alt={title}
-        className="w-20 h-20 rounded-lg object-cover mr-4"
+        className={`object-cover rounded-l-2xl ${shortCard ? "h-32 w-32" : "h-full w-64"}`}
       />
-      <div className="flex-1">
-        <div className="flex items-center gap-2">
-          <span className="font-bold text-lg">{title}</span>
+
+      {/* Middle: content fills remaining width */}
+      <div className="flex-1 min-w-0 p-6">
+        {/* Title + promo tag inline */}
+        <div className="flex items-center gap-3">
+          <h3 className={`font-extrabold tracking-tight truncate ${shortCard ? "text-base" : "text-2xl"}`}>
+            {title}
+          </h3>
           {tag && (
             <span
-              className={`ml-2 ${tagColor} text-white text-xs font-bold px-2 py-0.5 rounded`}
+              className={`${tagColor} text-white ${shortCard ? "text-xs px-2 py-0.5" : "text-sm px-3 py-1"} font-bold rounded-lg`}
             >
               {tag}
             </span>
           )}
         </div>
-        <div className="text-xs text-gray-600">by {provider}</div>
-        <div className="text-xs text-gray-500">{experience}</div>
-        <div className="flex items-center gap-2 mt-2">
-          <span className="bg-yellow-300 text-yellow-900 text-xs font-bold px-2 py-0.5 rounded flex items-center">
-            ★{rating}
+
+        {/* Subheader */}
+        <p className={`mt-1 truncate text-gray-600 ${shortCard ? "text-sm" : "text-lg"}`}>by {provider}</p>
+        <p className={`${shortCard ? "text-xs" : "text-base"} text-gray-500`}>{experience}</p>
+
+        {/* Badges row */}
+        <div className={`mt-3 flex items-center gap-3 ${shortCard ? "text-xs" : "text-sm"}`}>
+          <span className="inline-flex items-center rounded-md bg-yellow-300/90 px-2.5 py-1 font-semibold text-yellow-900">
+            ★ {rating}
           </span>
-          <span className="bg-green-100 text-green-700 text-xs font-bold px-2 py-0.5 rounded">
+          <span className="inline-flex items-center rounded-md bg-green-100 px-2.5 py-1 font-semibold text-green-700">
             {price}
           </span>
         </div>
       </div>
-      <button
-        className="ml-4 bg-[#8B46F6] hover:bg-[#6C38B8] text-white font-semibold rounded px-4 py-2 text-sm transition"
-        onClick={onBook}
-      >
-        Book Now <span aria-hidden>→</span>
-      </button>
-    </div>
-  );
+
+      {/* Right: action button */}
+      <div className="flex items-center pr-6">
+        <button
+          className={`shrink-0 rounded-xl bg-[#8B46F6] ${smallButton ? "px-3 py-1 text-sm" : "px-6 py-3 text-base"} font-semibold text-white transition hover:bg-[#6C38B8]`}
+          onClick={onBook}
+        >
+          Book Now <span aria-hidden>→</span>
+        </button>
+      </div>
+    </div>)
 }

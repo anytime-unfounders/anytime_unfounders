@@ -1,21 +1,36 @@
-import React from "react";
+import Image from "next/image";
+import { useRouter } from "next/router";
 
-interface ServiceCategoryCardProps {
-  icon: React.ReactNode;
+type Props = {
+  icon: string;   // emoji or image path
   label: string;
   hot?: boolean;
-}
+};
 
-export default function ServiceCategoryCard({ icon, label, hot }: ServiceCategoryCardProps) {
+export default function ServiceCategoryCard({ icon, label, hot }: Props) {
+  const isImagePath = icon.startsWith("/");
+  const router = useRouter();
+
   return (
-    <div className="flex flex-col items-center justify-center bg-white rounded-xl border border-[#E5E5E5] shadow p-4 w-28 h-28 relative">
-      {hot && (
-        <span className="absolute top-2 left-2 bg-pink-500 text-white text-xs font-bold px-2 py-0.5 rounded">
-          HOT
-        </span>
-      )}
-      <div className="text-3xl mb-2">{icon}</div>
-      <span className="text-xs text-gray-700 text-center">{label}</span>
-    </div>
+    <button
+      className="w-full focus:outline-none"
+      onClick={() => router.push(`/categories/${label.toLowerCase()}`)}
+      type="button"
+    >
+      <div className="relative flex flex-col items-center justify-center rounded-xl bg-white p-4 shadow-sm hover:shadow-md transition border border-gray-400">
+        {/* HOT badge */}
+        {hot && (
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 bg-red-500 text-white text-xs font-semibold px-2 py-0.5 rounded-md shadow">
+            HOT
+          </div>
+        )}
+        {isImagePath ? (
+          <Image src={icon} alt={label} width={60} height={60} className="mb-1 object-contain" priority />
+        ) : (
+          <span className="mb-2 text-3xl">{icon}</span>
+        )}
+        <span className="text-sm font-medium">{label}</span>
+      </div>
+    </button>
   );
 }

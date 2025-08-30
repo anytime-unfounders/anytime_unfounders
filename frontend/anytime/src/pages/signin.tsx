@@ -1,9 +1,24 @@
 // src/pages/signin.tsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 
 export default function SignIn() {
+  //axios API (matthew)
+  // fetch items on mount
+  const [items, setItems] = useState<any[]>([]);
+  useEffect(() => {
+    const fetchItems = async () => {
+      try {
+        const response = await axios.get<any[]>(`${process.env.REACT_APP_API_URL}/api/items/`);
+        setItems(response.data);
+      } catch (error) {
+        // handle error if needed
+      }
+    };
+    fetchItems();
+  }, []);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
