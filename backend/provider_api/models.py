@@ -3,7 +3,7 @@ from django.db import models
 # Create your models here.
 # models.py
 from django.db import models
-from django_cryptography.fields import encrypt
+from encrypted_fields.fields import EncryptedCharField, EncryptedTextField, EncryptedDateField
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
@@ -59,10 +59,10 @@ class ServiceProviderProfile(models.Model):
     )
     service_description = models.TextField(max_length=500)
     
-    name_on_card = encrypt(models.CharField(max_length=100))
-    transit_number = encrypt(models.CharField(max_length=20))
-    institution_number = encrypt(models.CharField(max_length=20))
-    account_number = encrypt(models.CharField(max_length=30))
+    name_on_card = EncryptedCharField(models.CharField(max_length=100))
+    transit_number = EncryptedCharField(models.CharField(max_length=20))
+    institution_number = EncryptedCharField(models.CharField(max_length=20))
+    account_number = EncryptedCharField(models.CharField(max_length=30))
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
     is_available = models.BooleanField(default=False)
