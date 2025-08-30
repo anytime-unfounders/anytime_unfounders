@@ -8,7 +8,7 @@ urlpatterns = [
     path('logout/', views.logout, name='logout'),
     path('password_creation/', views.password_creation, name='password_creation'),
     path('accounts/', include('django.contrib.auth.urls')),
-    path('provider_category/', views.ProviderCategoryForm.as_view(), name='provider_category'),
+    path('provider_category/', views.provider_category, name='provider_category'),
     path('book_provider/', views.book_provider, name='book_provider'),
     path('try_again/', views.try_again, name='try_again'),
     path('provider_not_responding/', views.provider_not_responding, name='provider_not_responding'),

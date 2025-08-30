@@ -117,6 +117,19 @@ def update_user_location(request):
         return JsonResponse({"status": "ok"})
     return JsonResponse({"status": "unauthorized"}, status=401)
 
+def provider_category(request):
+    if request.method == 'POST':
+        form = ProviderCategoryForm(request.POST)
+        if form.is_valid():
+            # Process the form data
+            service_category = form.cleaned_data['provider_service_category']
+            latitude = form.cleaned_data['latitude']
+            longitude = form.cleaned_data['longitude']
+            return JsonResponse({"status": "ok"})
+    else:
+        form = ProviderCategoryForm()
+    return render(request, 'instant_booking.html', {'form': form})
+
 def nearby_providers(request):
     user_location = UserLocation.objects.filter(user=request.user).first()
     if not user_location:
