@@ -256,7 +256,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = "anytimeamam@gmail.com"
 EMAIL_HOST_PASSWORD = "mewo ieow vpsc rzaw"
-AUTH_USER_MODEL = "provider_api.User"
+# AUTH_USER_MODEL = "provider_api.User"
 
 # Celery Configuration
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
