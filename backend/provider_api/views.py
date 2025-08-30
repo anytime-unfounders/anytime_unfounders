@@ -152,7 +152,7 @@ def nearby_providers(request):
     user_lat = float(request.GET.get("lat"))
     user_lon = float(request.GET.get("lon"))
     radius_km = 10  # e.g. search within 10km
-
+    
     providers = ServiceProviderProfile.objects.filter(is_available=True)
 
     # Simple distance filter (Haversine formula recommended for accuracy)

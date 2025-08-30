@@ -158,33 +158,45 @@ def nearby_providers(request):
 
 def book_provider(request): # view for users to book a service provider
     if request.method == "POST": # check if the request method is POST
-        form = InstantBookingChoiceForm(request.POST) # create form for user's instant booking choice
-        instant_booking = form.cleaned_data.get('instant_booking') # check if instant booking is enabled
+        form = BookingForm(request.POST) # create form for user's instant booking choice
+        booking_type = request.POST.get('booking_type')
         if form.is_valid(): # validate the form
-            if instant_booking: # if instant booking is enabled
-                booking = form.save(commit=False) # create booking instance but don't save yet
-                booking.user = request.user # assign the logged-in user to the booking
-                booking.status = "confirmed" # set booking status to confirmed
-                booking.save() # save
-                return redirect('/booking_success/') # redirect to instant booking success page
-            else: # if no instant booking
-                booking_form = BookingForm(request.POST) # create a booking form instance with POST data
-                if booking_form.is_valid():
-                    booking = booking_form.save(commit=False) # create booking instance but don't save yet
-                    booking.user = request.user # assign the logged-in user to the booking
-                    booking.status = "pending" # set booking status to pending
-                    booking.save()
+            # instant booking logic
+            user_location = UserLocation.objects.filter(user=request.user).first() # get user location
+            if not user_location:
+                return JsonResponse({"status": "error", "message": "User location not found"}, status=400)
+            user_lat, user_lon = user_location.latitude, user_location.longitude
+            radius_km = 10 # set search radius to 10 km
+            providers = ServiceProviderProfile.objects.filter(is_available=True) # get all available providers
+            booked = False # flag to track if booking was successful
 
-                    if booking.status == 'confirmed' and not ghosted_booking(booking): # if provider doesn't ghost
-                        respond_to_booking(booking) # call the function to respond to the booking
-                    elif ghosted_booking(booking): # if provider ghosts
-                        booking.status = 'ghosted' # set booking status to ghosted
-                        booking.save()
-                        return redirect('/try_again/') # redirect to reminder page, which shows options to search again (yes/no), then either loop back to search again or redirect to provider_not_responding
-            return redirect('/booking_success/') # redirect to booking success page
-    else:
-        form = BookingForm()
+            if booking_type == "instant":
+                for p in providers:
+                    if p.latitude and p.longitude:
+                        distance = haversine(user_lat, user_lon, p.latitude, p.longitude)
+                        if distance <= radius_km:
+                            booking = form.save(commit=False) # create booking instance but don't save yet
+                            booking.provider = p # assign the provider to the booking
+                            booking.user = request.user # assign the logged-in user to the booking
+                            booking.status = "confirmed" # set booking status to confirmed
+                            booking.save() # save
+                            booked = True # set booking flag to True
+                            break # exit loop after successful booking
+                if booked: # if booking was successful
+                    return JsonResponse({"status": "success", "message": "Booking confirmed"}, status=200)
+                else:
+                    return JsonResponse({"status": "error", "message": "No available providers found"}, status=404)
+            else:
+                # normal booking logic (user picks provider)
+                booking = form.save(commit=False)
+                booking.user = request.user
+                booking.status = "pending" # set booking status to pending
+                booking.save() # save booking
+                return JsonResponse({"status": "success", "message": "Booking created successfully"}, status=200)
+        else:
+            form = BookingForm()
     return render(request, 'book_provider.html', {'form': form})
+ 
 
 def try_again(request): # view to let user try booking again if no providers available
     if request.method == 'POST': # send user a reminder and ask if they want to try a different provider

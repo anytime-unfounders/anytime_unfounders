@@ -55,7 +55,6 @@ INSTALLED_APPS = [
     "django_otp.plugins.otp_totp",
     "formtools",
     "corsheaders",
-    "encrypted_fields",
 
     # Allauth
     "allauth",
