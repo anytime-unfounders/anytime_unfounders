@@ -21,7 +21,7 @@ LOGS_DIR.mkdir(exist_ok=True)
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-#AUTH_USER_MODEL = "provider_api.User"
+AUTH_USER_MODEL = "provider_api.User"
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
