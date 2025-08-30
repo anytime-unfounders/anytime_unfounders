@@ -13,6 +13,11 @@ from django.db.models import F
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
+from math import radians, sin, cos, sqrt, atan2
+from django.utils import timezone
+from datetime import timedelta
+from user_api.models import Booking
+from .forms import ProviderBookingResponseForm
 
 FORMS = [
     ("account_info", AccountInfoForm),
@@ -147,7 +152,7 @@ def nearby_providers(request):
     user_lat = float(request.GET.get("lat"))
     user_lon = float(request.GET.get("lon"))
     radius_km = 10  # e.g. search within 10km
-
+    
     providers = ServiceProviderProfile.objects.filter(is_available=True)
 
     # Simple distance filter (Haversine formula recommended for accuracy)
@@ -168,3 +173,65 @@ def nearby_providers(request):
                 })
 
     return JsonResponse(results, safe=False)
+
+def providers_by_category(request):
+    category = request.GET.get("category")  # Get the category from the request
+    user_lat = float(request.GET.get("lat"))
+    user_lon = float(request.GET.get("lon"))
+    radius_km = 10  # search within 10km
+    providers = ServiceProviderProfile.objects.filter(is_available=True, service_category__slug=category)
+
+    results = []
+    for p in providers:
+        if p.latitude and p.longitude:
+            # rough distance calc
+            dx = (user_lat - p.latitude) * 111  # km per lat
+            dy = (user_lon - p.longitude) * 111  # km per lon (approx)
+            distance = (dx**2 + dy**2) ** 0.5
+            if distance <= radius_km:
+                results.append({
+                    "id": p.id,
+                    "name": p.user.get_full_name(),
+                    "lat": p.latitude,
+                    "lon": p.longitude,
+                    "service": p.service_description,
+                })
+    # sort by distance (using haversine formula)
+    results.sort(key=lambda x: haversine(user_lat, user_lon, x["lat"], x["lon"]))
+    return JsonResponse(results, safe=False)
+
+def haversine(lat1, lon1, lat2, lon2):  # Haversine formula to calculate distance for more precision
+    R = 6371  # Earth radius in kilometers
+    dlat = radians(lat2 - lat1)
+    dlon = radians(lon2 - lon1)
+    a = sin(dlat/2) ** 2 + cos(radians(lat1)) * cos(radians(lat2)) * sin(dlon/2) ** 2
+    c = 2 * atan2(sqrt(a), sqrt(1 - a))
+    return R * c
+
+def respond_to_booking(request, booking_id): # view for provider to respond to booking request
+    booking = Booking.objects.filter(id=booking_id, provider__user=request.user).first()
+    if not booking:
+        return JsonResponse({"error": "Booking not found or you are not authorized to respond."}, status=404)
+
+    if request.method == "POST":
+        form = ProviderBookingResponseForm(request.POST)
+        if form.is_valid():
+            booking.provider_responded_at = timezone.now()
+            booking.status = form.cleaned_data['status']
+            booking.save()
+            return JsonResponse({"status": "ok"})
+    else:
+        form = ProviderBookingResponseForm()
+
+    return render(request, 'respond_to_booking.html', {'form': form, 'booking': booking})
+
+def ghosted_booking(request, booking_id):
+    booking = Booking.objects.filter(id=booking_id, provider__user=request.user).first()
+    if not booking: # if booking not found
+        return JsonResponse({"error": "Booking not found or you are not authorized to ghost."}, status=404)
+    
+    if booking.provider_responded_at + timedelta(hours=3) < timezone.now(): # if provider hasn't responded in 3 hours
+        booking.provider.ghosted = True # mark provider as ghosted
+        booking.provider.save() # save the provider's ghosted status
+        return JsonResponse({"status": "ok"})
+    return JsonResponse({"status": "not_ghosted"}, status=400) # provider has already responded

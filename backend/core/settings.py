@@ -12,12 +12,16 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
+from celery.schedules import crontab
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 LOGS_DIR = BASE_DIR / "logs"
 LOGS_DIR.mkdir(exist_ok=True)
-
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR / 'static']
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+AUTH_USER_MODEL = "provider_api.User"
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -44,12 +48,13 @@ INSTALLED_APPS = [
     "django.contrib.sites",
 
     # Third-party
-    "corsheaders",
     "rest_framework",
     "rest_framework.authtoken",
     "axes",
     "django_otp",
     "django_otp.plugins.otp_totp",
+    "formtools",
+    "corsheaders",
 
     # Allauth
     "allauth",
@@ -62,7 +67,7 @@ INSTALLED_APPS = [
     "dj_rest_auth.registration",
 
     # Local apps
-    "accounts",
+    "backend.accounts",
     "user_api",
     "provider_api",
     "pricing",
@@ -242,8 +247,7 @@ LOGGING = {
     },
 }
 
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']
+
 
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
@@ -252,3 +256,14 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = "anytimeamam@gmail.com"
 EMAIL_HOST_PASSWORD = "mewo ieow vpsc rzaw"
+
+
+# Celery Configuration
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_BEAT_SCHEDULE = {
+    'check-ghosted-bookings': { # scheduled task to check for ghosted bookings every 5 minutes, automated
+        'task': 'user_api.tasks.check_ghosted_bookings',
+        'schedule': crontab(minute='*/5'),  # every 5 minutes
+    },
+}
