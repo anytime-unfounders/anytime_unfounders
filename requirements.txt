@@ -175,5 +175,5 @@ yarg==0.1.10
 yarl==1.20.1
 zope.interface==7.2
 zstandard==0.24.0
-
+django-fernet-encrypted-fields==0.3.0
  
