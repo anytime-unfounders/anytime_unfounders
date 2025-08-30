@@ -4,7 +4,7 @@ import ServiceCard from "../../components/Services/ServiceCard";
 import ServiceCategoryCard from "../../components/Services/ServiceCategoryCard";
 import SectionTitle from "../../components/Services/Section";
 
-import SortDropdown from "../../components//Services/SortDropdown";
+import SortDropdown from "../../components/Services/SortDropdown";
 import { useRouter } from "next/router";
 
 export default function Services() {
@@ -160,10 +160,12 @@ export default function Services() {
                     key={cat.label}
                     icon={cat.icon}
                     label={cat.label}
-                    hot={cat.hot}
+
                   />
                 ))}
               </div>
+
+
 
               {/* Upcoming Bookings — now BELOW the icons */}
               <div>
