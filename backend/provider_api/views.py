@@ -14,7 +14,8 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from math import radians, sin, cos, sqrt, atan2
-from django.utils import timezone, timedelta
+from django.utils import timezone
+from datetime import timedelta
 from user_api.models import Booking
 from .forms import ProviderBookingResponseForm
 
