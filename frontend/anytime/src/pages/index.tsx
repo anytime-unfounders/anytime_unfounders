@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 import AnimatedIntro from "../../components/AnimatedIntro/AnimatedIntro";
 
 // Social icons (using SVGs for simplicity)
@@ -54,6 +55,7 @@ function SocialIcons() {
 
 // Join Us form component
 function JoinUsForm() {
+  const router = useRouter();
   const [submitted, setSubmitted] = useState(false);
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
@@ -83,36 +85,46 @@ function JoinUsForm() {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="bg-white/90 rounded-xl shadow-xl p-8 flex flex-col gap-4 w-full max-w-xs sm:max-w-sm md:max-w-md min-w-0"
-    >
-      <h2 className="text-2xl font-bold mb-2 text-[#6C38B8] text-center">
-        Join us
-      </h2>
-      <p className="text-gray-600 mb-2 text-center">
-        Be the first to know when we launch!
-      </p>
-      <input
-        type="email"
-        name="email"
-        placeholder="Your email"
-        className="border rounded p-2 focus:outline-none focus:ring-2 focus:ring-[#8B46F6] w-full"
-        required
-        disabled={submitted}
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <button
-        type="submit"
-        className="bg-[#6C38B8] hover:bg-[#8B46F6] text-white font-semibold rounded p-2 mt-2 w-full"
-        disabled={submitted}
+    <>
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white/90 rounded-xl shadow-xl p-8 flex flex-col gap-4 w-full max-w-xs sm:max-w-sm md:max-w-md min-w-0"
       >
-        {submitted ? "Thank you!" : "Notify me"}
-      </button>
-      {error && <p className="text-red-500 text-center">{error}</p>}
-      <SocialIcons />
-    </form>
+        <h2 className="text-2xl font-bold mb-2 text-[#6C38B8] text-center">
+          Join us
+        </h2>
+        <p className="text-gray-600 mb-2 text-center">
+          Be the first to know when we launch!
+        </p>
+        <input
+          type="email"
+          name="email"
+          placeholder="Your email"
+          className="border rounded p-2 focus:outline-none focus:ring-2 focus:ring-[#8B46F6] w-full"
+          required
+          disabled={submitted}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <button
+          type="submit"
+          className="bg-[#6C38B8] hover:bg-[#8B46F6] text-white font-semibold rounded p-2 mt-2 w-full"
+          disabled={submitted}
+        >
+          {submitted ? "Thank you!" : "Notify me"}
+        </button>
+        {error && <p className="text-red-500 text-center">{error}</p>}
+
+        <SocialIcons />
+
+        <a
+          className="flex justify-center text-[#6C38B8] underline-offset-2 hover:underline cursor-pointer"
+          onClick={() => router.push("/signin")}
+        >
+          Sign In Now
+        </a>
+      </form>
+    </>
   );
 }
 
@@ -127,22 +139,11 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <main className="min-h-screen flex-col items-center justify-center overflow-hidden bg-[#F8F7FF] relative">
-      {/* Parallax Blobs */}
-      <div
-        className="absolute top-20 left-10 w-72 h-72 bg-[#6c48b8] rounded-full mix-blend-multiply filter blur-3xl opacity-30"
-        style={{ transform: `translateY(${scrollY * 0.2}px)` }}
-      />
-      <div
-        className="absolute top-40 right-10 w-96 h-96 bg-[#8BBfFF] rounded-full mix-blend-multiply filter blur-3xl opacity-30"
-        style={{ transform: `translateY(${scrollY * 0.3}px)` }}
-      />
-      <div
-        className="absolute bottom-20 left-1/2 -translate-x-1/2 w-80 h-80 bg-[#8B46F6] rounded-full mix-blend-multiply filter blur-3xl opacity-30"
-        style={{ transform: `translateY(${scrollY * 0.15}px)` }}
-      />
+    <main className="min-h-screen flex-col items-center justify-center overflow-hidden relative">
+      {/* Parallax Blobs removed, now handled by Bg component */}
 
       {/* Animated Intro (left side) */}
+
       <div
         className={
           introDone
@@ -155,11 +156,10 @@ export default function LandingPage() {
 
       {/* Join Us Form (slides in after intro) */}
       <div
-        className={`fixed inset-0 flex items-center justify-center transition-all duration-700 ${
-          introDone
-            ? "translate-y-0 opacity-100"
-            : "translate-y-[100vh] opacity-0 pointer-events-none"
-        }`}
+        className={`fixed inset-0 flex items-center justify-center transition-all duration-700 ${introDone
+          ? "translate-y-0 opacity-100"
+          : "translate-y-[100vh] opacity-0 pointer-events-none"
+          }`}
         style={{ zIndex: 20 }}
       >
         <JoinUsForm />

@@ -2,7 +2,6 @@
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
-@custom-variant hover (&:hover);
 
 @theme inline {
   --color-background: var(--background);
@@ -162,4 +161,5 @@
 
 .animate-spin-stop {
   animation: spin-stop 2s ease-out forwards; /* slows down and freezes */
+
 }
