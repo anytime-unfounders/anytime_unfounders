@@ -5,14 +5,13 @@ from django.contrib.auth import authenticate, login, logout
 from .forms import UserRegistrationForm, UserPasswordCreationForm, UserLoginForm, UserLogoutForm, ProviderCategoryForm
 from django.views.decorators.csrf import csrf_exempt
 from .models import UserLocation
-from provider_api.models import ServiceProviderProfile # import provider profile model
+
 from django.contrib.auth.models import User
 from .models import UserProfile
 from .forms import BookingForm
 from .models import Booking
-from provider_api.views import haversine # ensure haversine function is defined or imported
-from provider_api.forms import ProviderBookingResponseForm
-from provider_api.views import respond_to_booking, ghosted_booking
+
+
 from django.utils import timezone
 from payments.views import banking_info
 
@@ -154,6 +153,7 @@ def provider_category(request):
         form = ProviderCategoryForm()
     return JsonResponse({"status": "ok", "category": service_category, "providers": results}, status=200)
 
+<<<<<<< HEAD
 # function that filters providers based on user location and selected category, pushes to provider_category
 def get_filtered_providers(service_category, user_latitude, user_longitude, radius_km=10):
     providers = ServiceProviderProfile.objects.filter(
@@ -162,6 +162,14 @@ def get_filtered_providers(service_category, user_latitude, user_longitude, radi
         latitude__range=(user_latitude - radius_km / 111.0, user_latitude + radius_km / 111.0),
         longitude__range=(user_longitude - radius_km / 111.0, user_longitude + radius_km / 111.0)
     )
+=======
+def nearby_providers(request):
+    from backend.provider_api.models import ServiceProviderProfile # import provider profile model
+    from backend.provider_api.views import haversine # ensure haversine function is defined or imported
+    user_location = UserLocation.objects.filter(user=request.user).first()
+    if not user_location:
+        return JsonResponse([], safe=False)
+>>>>>>> 30824264190476da85e2f83457da0082bf843c6e
 
     results = []
 
@@ -228,6 +236,8 @@ def nearby_providers(request):
 # ============================
 
 def book_provider(request): # view for users to book a service provider
+    from backend.provider_api.views import haversine # ensure haversine function is defined or imported
+    from backend.provider_api.models import ServiceProviderProfile # import provider profile model
     if request.method == "POST": # check if the request method is POST
         form = BookingForm(request.POST) # create form for user's instant booking choice
         booking_type = request.POST.get('booking_type')
@@ -285,6 +295,7 @@ def provider_not_responding(request): # redirect from book_provider when provide
     return JsonResponse({'request': request, 'template': 'provider_not_responding.html'})
 
 def booking_status(request, booking_id): # view to check booking status, redirected from provider_not_responding or book_provider
+    from backend.provider_api.views import ghosted_booking
     booking = Booking.objects.get(id=booking_id, user=request.user) # get booking object for the logged-in user based on booking_id
     if request.method == 'POST':
         if 'refresh' in request.POST: # if user chooses to refresh booking status
@@ -337,6 +348,8 @@ def homepage(request):
 # ============================
 
 def provider_requests(request): # connection to provider_api: view for providers to see booking requests, sorted by distance if location available
+    from backend.provider_api.models import ServiceProviderProfile # import provider profile model
+    from backend.provider_api.views import haversine # ensure haversine function is defined or imported
     provider = ServiceProviderProfile.objects.filter(user=request.user).first() # get provider profile for logged-in user
     bookings = Booking.objects.filter(provider__user=request.user).order_by('-service_date') # get all bookings for provider, ordered by service date
     results = [] # initialize results list

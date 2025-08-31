@@ -13,15 +13,19 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 import os
 from celery.schedules import crontab
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+DEBUG=False
 BASE_DIR = Path(__file__).resolve().parent.parent
 LOGS_DIR = BASE_DIR / "logs"
 LOGS_DIR.mkdir(exist_ok=True)
-STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_URL = '/static/'
 AUTH_USER_MODEL = "provider_api.User"
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -31,9 +35,8 @@ SECRET_KEY = 'django-insecure-4kxt-3j(u*5puknh!#aft!d^r8(0@&(fvs$q$(29hk1hm&%_(h
 STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "sk_test_51RynRHBf33ek24lBZjV43c5DTVMWzzLI6M8DkqdNEc049K422sHuzWE6AFwG8XqIK7gXQ9DWjsG8QSTPAqnE2iWE00op9c1NWr")
 STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY", "pk_test_51RynRHBf33ek24lB8mX4vYH5pXG6mJ3eYJ1oXKXo2Yp0Yt2b7r0gW7y3w5Zkz5yD8Fz4eE6Qk3JqF7jH9h8j3QO00wz5c1L2")
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", '*']
 SITE_ID=1
 
 # Application definition
@@ -48,13 +51,13 @@ INSTALLED_APPS = [
     "django.contrib.sites",
 
     # Third-party
+    "corsheaders",
     "rest_framework",
     "rest_framework.authtoken",
     "axes",
     "django_otp",
     "django_otp.plugins.otp_totp",
     "formtools",
-    "corsheaders",
 
     # Allauth
     "allauth",
@@ -68,10 +71,10 @@ INSTALLED_APPS = [
 
     # Local apps
     "backend.accounts",
-    "user_api",
-    "provider_api",
-    "pricing",
-    "payments.apps.PaymentsConfig",
+    "backend.user_api",
+    "backend.provider_api",
+    "backend.pricing",
+    "backend.payments.apps.PaymentsConfig",
 ]
    
 
@@ -79,6 +82,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -92,6 +96,7 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://localhost:3000",
+    "https://anytime-six.vercel.app/",
 ]
 
 REST_FRAMEWORK = {
@@ -135,12 +140,15 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
     }
 }
 
+db_from_env = dj_database_url.config(conn_max_age=600, ssl_require=True)
+if db_from_env:
+    DATABASES["default"].update(db_from_env)
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

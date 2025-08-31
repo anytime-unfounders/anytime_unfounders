@@ -14,7 +14,7 @@ from django.contrib.auth import authenticate, login, logout
 from math import radians, sin, cos, sqrt, atan2
 from django.utils import timezone
 from datetime import timedelta
-from user_api.models import Booking
+
 from .forms import ProviderBookingResponseForm
 
 FORMS = [
@@ -221,6 +221,7 @@ def haversine(lat1, lon1, lat2, lon2):  # Haversine formula to calculate distanc
 # ============================
 
 def respond_to_booking(request, booking_id): # view for provider to respond to booking request
+    from user_api.models import Booking
     booking = Booking.objects.filter(id=booking_id, provider__user=request.user).first()
     if not booking:
         return JsonResponse({"error": "Booking not found or you are not authorized to respond."}, status=404)
@@ -238,6 +239,7 @@ def respond_to_booking(request, booking_id): # view for provider to respond to b
     return JsonResponse({'status': 'success', 'message': 'Redirecting to respond to booking'}, status=200)
 
 def ghosted_booking(request, booking_id):
+    from user_api.models import Booking
     booking = Booking.objects.filter(id=booking_id, provider__user=request.user).first()
     if not booking: # if booking not found
         return JsonResponse({"error": "Booking not found or you are not authorized to ghost."}, status=404)
