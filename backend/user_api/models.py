@@ -15,6 +15,11 @@ class UserProfile(models.Model): # create profile model to extend user informati
     postal_code = models.CharField(max_length=20, blank=True)
     province_state = models.CharField(max_length=100, blank=True)
     country = models.CharField(max_length=100, blank=True)
+    class Meta:
+        app_label = 'backend.user_api'  # Explicitly tell Django which app this model belongs to
+
+    def __str__(self):
+        return f"{self.user.username} Profile"
 
 class UserLocation(models.Model):
     user = models.OneToOneField(
