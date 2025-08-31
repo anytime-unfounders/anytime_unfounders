@@ -7,7 +7,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();
   return (
     <div className="relative min-h-screen overflow-hidden">
-      <Bg />
+      {/* <Bg /> */}
       <Component {...pageProps} key={router.asPath} />
     </div>
   );

@@ -60,7 +60,7 @@ export default function Booking() {
                         <div className="text-sm font-semibold mb-1">Recent Work:</div>
                         <div className="grid grid-cols-1 gap-2">
                             <Image src="/service-photos/dog.jpg" alt="Recent Work 1" width={90} height={90} className="rounded-lg object-cover" />
-                            <Image src="/service-photos/dog2.jpg" alt="Recent Work 2" width={90} height={90} className="rounded-lg object-cover" />
+                            {/* <Image src="/service-photos/dog2.jpg" alt="Recent Work 2" width={90} height={90} className="rounded-lg object-cover" /> */}
                         </div>
                     </div>
                     {/* Right: Reviews */}
@@ -120,7 +120,7 @@ export default function Booking() {
                     <div className="flex flex-col gap-6">
                         {/* Service 1 */}
                         <div className="bg-white rounded-xl shadow flex flex-row items-center p-4 gap-4">
-                            <Image src="/service-photos/dog2.jpg" alt="Dog Walker" width={90} height={90} className="rounded-lg object-cover" />
+                            {/* <Image src="/service-photos/dog2.jpg" alt="Dog Walker" width={90} height={90} className="rounded-lg object-cover" /> */}
                             <div className="flex flex-col flex-1">
                                 <div className="text-lg font-bold">Dog Walker</div>
                                 <div className="text-xs text-gray-500">by Michelle Thorpe</div>
@@ -137,7 +137,7 @@ export default function Booking() {
                         </div>
                         {/* Service 2 */}
                         <div className="bg-white rounded-xl shadow flex flex-row items-center p-4 gap-4">
-                            <Image src="/service-photos/dog3.jpg" alt="Dog Sitter" width={90} height={90} className="rounded-lg object-cover" />
+                            {/* <Image src="/service-photos/dog3.jpg" alt="Dog Sitter" width={90} height={90} className="rounded-lg object-cover" /> */}
                             <div className="flex flex-col flex-1">
                                 <div className="text-lg font-bold">Dog Sitter</div>
                                 <div className="text-xs text-gray-500">by Chloe Fox</div>
