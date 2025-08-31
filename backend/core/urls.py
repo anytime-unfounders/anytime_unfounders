@@ -18,17 +18,21 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [ # add root directory (i.e. homepage)
-    path("admin/", admin.site.urls),
-    path("api/auth/", include("dj_rest_auth.urls")),
-    path("accounts/", include("allauth.urls")), # add allauth urls
-    path("api/user/", include("user_api.urls")),
-    path("api/provider/", include("provider_api.urls")),
+    
+    # dj admin is backend-only tool, no need for frontend
+    path("admin/", admin.site.urls), # admin site (for managing database models, users, etc.)
+       
+    # ONLY use for traditional server-rendered web pages (in other words probably won't need)
+    path("accounts/", include("allauth.urls")), # FOR USERS INTERACTING WITH DJ BUILT IN WEB FORMS: web based auth and account management--all routes from django allauth (registration, login, passwords, etc.)
 
     # APIs
-    path("api/user/", include("user_api.urls")), # consumer app
-    path("api/provider/", include("provider_api.urls")), # provider portal
+    path("api/user/", include("backend.user_api.urls")), # consumer app
+    path("api/provider/", include("backend.provider_api.urls")), # provider app
     path("api/payments/", include("backend.payments.urls")), # payments app
-    path('api/auth/registration/', include('dj_rest_auth.registration.urls')),
+    
+    # FRONTEND-USE ENDPOINTS FOR AUTH (used for React, Next.js), includes API endpoints for authentication + user registration
+    path("api/auth/", include("dj_rest_auth.urls")), # login, logout, password reset, user info
+    path('api/auth/registration/', include('dj_rest_auth.registration.urls')), # user registration (new users signing up)
 
 ]
 
