@@ -1,6 +1,6 @@
 import json
-from django.http import HttpResponseRedirect, JsonResponse
-from django.shortcuts import render, redirect
+from django.http import JsonResponse
+from django.shortcuts import redirect
 from django.contrib.auth import authenticate, login, logout
 from .forms import UserRegistrationForm, UserPasswordCreationForm, UserLoginForm, UserLogoutForm, ProviderCategoryForm
 from django.views.decorators.csrf import csrf_exempt
@@ -15,6 +15,11 @@ from provider_api.forms import ProviderBookingResponseForm
 from provider_api.views import respond_to_booking, ghosted_booking
 from django.utils import timezone
 from payments.views import banking_info
+
+
+# ============================
+# USER REGISTRATION
+# ============================
 
 def register(request):
     # if this is a POST request we need to process the form data
@@ -54,7 +59,7 @@ def register(request):
             )
             login(request, user)  # log the user in after registration
             # redirect to a page after successfully submitting form:
-            return HttpResponseRedirect('/thanks/') 
+            return JsonResponse({"status": "success", "message": "Registration successful"}, status=200)
 
     # if any other method, use UserRegistrationForm to generate form, validate, access cleaned data
     else:
@@ -72,10 +77,15 @@ def password_creation(request):
             if user_new_password == user_confirm_password:
                 request.user.set_password(user_new_password)
                 request.user.save()
-                return HttpResponseRedirect('/thanks/')
+                return JsonResponse({"status": "success", "message": "Password created successfully"}, status=200)
     else:
         form = UserPasswordCreationForm()
-    return redirect('/banking_info/')
+    return JsonResponse({"status": "success", "message": "Redirecting to homepage"}, status=200)
+
+
+# ============================
+# LOGIN/LOGOUT
+# ============================
 
 def login(request):
     if request.method == 'POST':
@@ -86,20 +96,20 @@ def login(request):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-                return HttpResponseRedirect('/thanks/')
+                return JsonResponse({"status": "success", "message": "Login successful"}, status=200)
     else:
         form = UserLoginForm()
-    return render(request, 'name.html', {'form': form})    
+    return JsonResponse({"status": "ok"}, status=200)
 
 def logout(request):
     if request.method == 'POST':
         form = UserLogoutForm(request.POST)
         if form.is_valid():
             logout(request) # validates empty logout form, calls function to log out user
-            return HttpResponseRedirect('/thanks/')
+            return JsonResponse({"status": "success", "message": "Logout successful"}, status=200)
     else:
         form = UserLogoutForm()
-    return render(request, 'name.html', {'form': form})
+    return JsonResponse({"status": "ok"}, status=200)
 
 @csrf_exempt
 def update_user_location(request):
@@ -116,33 +126,48 @@ def update_user_location(request):
         return JsonResponse({"status": "ok"})
     return JsonResponse({"status": "unauthorized"}, status=401)
 
+
+# ============================
+# CATEGORY SELECTION
+# ============================
+
+# for users to select a service category and see nearby providers in that category
 def provider_category(request):
     if request.method == 'POST':
         form = ProviderCategoryForm(request.POST)
         if form.is_valid():
             # Process the form data
             service_category = form.cleaned_data['provider_service_category']
-            latitude = form.cleaned_data['latitude']
-            longitude = form.cleaned_data['longitude']
-            return JsonResponse({"status": "ok"})
+            user_latitude = form.cleaned_data['latitude']
+            user_longitude = form.cleaned_data['longitude']
+            radius_km = 10  # default radius of 10 km
+
+            results = get_filtered_providers( # call method to filter through providers
+                service_category,
+                user_latitude,
+                user_longitude,
+                radius_km,
+            )
+
+            return JsonResponse(results, safe=False)
     else:
         form = ProviderCategoryForm()
-    return render(request, 'instant_booking.html', {'form': form})
+    return JsonResponse({"status": "ok", "category": service_category, "providers": results}, status=200)
 
-def nearby_providers(request):
-    user_location = UserLocation.objects.filter(user=request.user).first()
-    if not user_location:
-        return JsonResponse([], safe=False)
+# function that filters providers based on user location and selected category, pushes to provider_category
+def get_filtered_providers(service_category, user_latitude, user_longitude, radius_km=10):
+    providers = ServiceProviderProfile.objects.filter(
+        service_category=service_category,
+        # calculate lat/lon range for filtering within certain radius
+        latitude__range=(user_latitude - radius_km / 111.0, user_latitude + radius_km / 111.0),
+        longitude__range=(user_longitude - radius_km / 111.0, user_longitude + radius_km / 111.0)
+    )
 
-    user_lat, user_lon = user_location.latitude, user_location.longitude
-    radius_km = 10
+    results = []
 
-    providers = ServiceProviderProfile.objects.filter(is_available=True)
-    results = [] # add into results list
-
-    for p in providers: # loop to iterate all bookings for provider, calculate distance, sort and display bookings to provider based on distance
+    for p in providers:
         if p.latitude and p.longitude:
-            distance = haversine(user_lat, user_lon, p.latitude, p.longitude)
+            distance = haversine(user_latitude, user_longitude, p.latitude, p.longitude)
             if distance <= radius_km:
                 results.append({
                     "id": p.id,
@@ -152,8 +177,55 @@ def nearby_providers(request):
                     "service": p.service_description,
                     "distance": round(distance, 2),
                 })
+    # sort by distance (using haversine formula)
+    results.sort(key=lambda x: haversine(user_latitude, user_longitude, x["lat"], x["lon"]))
+    return results # returning filtered provider results to nearby_providers
+
+## FRONTEND CALLS ENDPOINT --> displays list of providers --> user selects a provider
+
+# displays after user selects a provider, shows provider details + booking info
+def provider_booking_info(provider_id):
+    provider = ServiceProviderProfile.objects.filter(id=provider_id).first()
+    if not provider:
+        return JsonResponse({"error": "Provider not found"}, status=404)
+
+    # Get booking information for the provider
+    bookings = Booking.objects.filter(provider=provider)
+
+    booking_info = []
+
+    for booking in bookings:
+        booking_info.append({
+            "id": booking.id,
+            "user": booking.user.get_full_name(),
+            "date": booking.date,
+            "location": booking.location,
+            "status": booking.status,
+        })
+
+    return JsonResponse({"status": "success", "data": booking_info}, status=200) # return booking info to frontend
+
+# filters providers based on user location ONLY (NO category)
+def nearby_providers(request):
+    user_location = UserLocation.objects.filter(user=request.user).first()
+    if not user_location:
+        return JsonResponse([], safe=False)
+
+    user_latitude=float(request.POST.get('latitude')),
+    user_longitude=float(request.POST.get('longitude')),
+    radius_km=float(request.POST.get('radius_km', 10)), # default to 10 if not provided
+    
+    results = get_filtered_providers( # call method to filter through providers
+        user_latitude,
+        user_longitude,
+        radius_km,
+    )
 
     return JsonResponse(results, safe=False)
+
+# ============================
+# USER BOOKING LOGIC TREE
+# ============================
 
 def book_provider(request): # view for users to book a service provider
     if request.method == "POST": # check if the request method is POST
@@ -182,7 +254,7 @@ def book_provider(request): # view for users to book a service provider
                             booked = True # set booking flag to True
                             break # exit loop after successful booking
                 if booked: # if booking was successful
-                    return JsonResponse({"status": "success", "message": "Booking confirmed"}, status=200)
+                    return redirect('/booking_success/', booking_id=booking.id)
                 else:
                     return JsonResponse({"status": "error", "message": "No available providers found"}, status=404)
             else:
@@ -191,11 +263,10 @@ def book_provider(request): # view for users to book a service provider
                 booking.user = request.user
                 booking.status = "pending" # set booking status to pending
                 booking.save() # save booking
-                return JsonResponse({"status": "success", "message": "Booking created successfully"}, status=200)
+                return redirect('/booking_status/', booking_id=booking.id) # redirect to booking status page with booking ID
         else:
             form = BookingForm()
-    return render(request, 'book_provider.html', {'form': form})
- 
+    return JsonResponse({'request': request, 'template': 'book_provider.html', 'context': {'form': form}})
 
 def try_again(request): # view to let user try booking again if no providers available
     if request.method == 'POST': # send user a reminder and ask if they want to try a different provider
@@ -203,7 +274,7 @@ def try_again(request): # view to let user try booking again if no providers ava
             return redirect('/book_provider/') # redirect back to book_provider page, loop back to the same logic
         elif 'no' in request.POST: # if user chooses not to try again
             return redirect('/provider_not_responding/') # redirect to provider_not_responding page
-    return render(request, 'try_again.html')
+    return JsonResponse({'request': request, 'template': 'try_again.html'})
 
 def provider_not_responding(request): # redirect from book_provider when provider is ghosting
     if request.method == 'POST': # give user option to wait longer or cancel booking
@@ -211,7 +282,7 @@ def provider_not_responding(request): # redirect from book_provider when provide
             return redirect('/booking_status/') # redirect back to booking status page to wait longer, if ghosted again, loop back to provider_not_responding
         elif 'cancel' in request.POST: # page with button "Cancel Booking"
             return redirect('/cancel_booking/') # redirect to cancel_booking page
-    return render(request, 'provider_not_responding.html')
+    return JsonResponse({'request': request, 'template': 'provider_not_responding.html'})
 
 def booking_status(request, booking_id): # view to check booking status, redirected from provider_not_responding or book_provider
     booking = Booking.objects.get(id=booking_id, user=request.user) # get booking object for the logged-in user based on booking_id
@@ -230,9 +301,8 @@ def booking_status(request, booking_id): # view to check booking status, redirec
             booking.save()
             return redirect('/booking_success/') # redirect to booking success page if booking is not ghosted
 
-
 def booking_success(request): # view for successful booking
-    return render(request, 'booking_success.html')
+    return JsonResponse({'request': request, 'template': 'booking_success.html'})
 
 def cancel_booking(request): # view to cancel a booking, redirected from provider_not_responding
     if request.method == 'POST':
@@ -243,7 +313,12 @@ def cancel_booking(request): # view to cancel a booking, redirected from provide
                 booking.status = 'cancelled'
                 booking.save()
         return redirect('/')  # redirect to home page
-    return render(request, 'cancel_booking.html')
+    return JsonResponse({'request': request, 'template': 'cancel_booking.html'})
+
+
+# ============================
+# USER HOMEPAGE
+# ============================
 
 def homepage(request):
     upcoming_bookings = []
@@ -254,7 +329,12 @@ def homepage(request):
             status__in=['confirmed', 'pending']
         ).order_by('service_date')[:5]  # limit to next 5 bookings
 
-    return render(request, 'homepage.html', {'upcoming_bookings': upcoming_bookings})
+    return JsonResponse({'request': request, 'template': 'homepage.html', 'context': {'upcoming_bookings': upcoming_bookings}})
+
+
+# ============================
+# PROVIDER VIEWING REQUESTS
+# ============================
 
 def provider_requests(request): # connection to provider_api: view for providers to see booking requests, sorted by distance if location available
     provider = ServiceProviderProfile.objects.filter(user=request.user).first() # get provider profile for logged-in user
@@ -274,4 +354,4 @@ def provider_requests(request): # connection to provider_api: view for providers
             "distance": round(distance, 2) if distance is not None else None,
         })
     results.sort(key=lambda x: (x['distance'] is None, x['distance'])) # sort results by distance
-    return render(request, 'provider_requests.html', {'bookings': results}) # render the provider requests page with the sorted bookings
+    return JsonResponse({'request': request, 'template': 'provider_requests.html', 'context': {'bookings': results}}) # return provider requests page with sorted bookings

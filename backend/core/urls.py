@@ -19,6 +19,8 @@ from django.urls import path, include
 
 urlpatterns = [ # add root directory (i.e. homepage)
     
+    path('', include('dj_rest_auth.registration.urls')),
+    
     # dj admin is backend-only tool, no need for frontend
     path("admin/", admin.site.urls), # admin site (for managing database models, users, etc.)
        
