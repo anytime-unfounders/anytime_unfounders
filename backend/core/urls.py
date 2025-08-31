@@ -29,10 +29,8 @@ urlpatterns = [ # add root directory (i.e. homepage)
     path("api/user/", include("backend.user_api.urls")), # consumer app
     path("api/provider/", include("backend.provider_api.urls")), # provider app
     path("api/payments/", include("backend.payments.urls")), # payments app
-    
-    # FRONTEND-USE ENDPOINTS FOR AUTH (used for React, Next.js), includes API endpoints for authentication + user registration
-    path("api/auth/", include("dj_rest_auth.urls")), # login, logout, password reset, user info
-    path('api/auth/registration/', include('dj_rest_auth.registration.urls')), # user registration (new users signing up)
+    path('', include('dj_rest_auth.registration.urls')),
+
 
 ]
 
