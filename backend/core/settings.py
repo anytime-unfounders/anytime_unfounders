@@ -71,10 +71,10 @@ INSTALLED_APPS = [
 
     # Local apps
     "backend.accounts",
-    "user_api",
-    "provider_api",
-    "pricing",
-    "payments.apps.PaymentsConfig",
+    "backend.user_api",
+    "backend.provider_api",
+    "backend.pricing",
+    "backend.payments.apps.PaymentsConfig",
 ]
    
 
