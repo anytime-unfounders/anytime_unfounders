@@ -22,6 +22,9 @@ class Provider(models.Model):
     pricing_structure = models.JSONField(default=dict, blank=True) # JSON field for saving structured data (complex data)
     social_media_URL = models.JSONField(default=dict, blank=True) # JSON field for saving social media links
 
+    class Meta:
+        app_label = 'provider_api'
+
 
 class ServiceCategory(models.Model):
     name = models.CharField(max_length=100)

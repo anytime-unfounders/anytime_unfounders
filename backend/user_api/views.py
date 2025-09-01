@@ -153,23 +153,22 @@ def provider_category(request):
         form = ProviderCategoryForm()
     return JsonResponse({"status": "ok", "category": service_category, "providers": results}, status=200)
 
-<<<<<<< HEAD
 # function that filters providers based on user location and selected category, pushes to provider_category
 def get_filtered_providers(service_category, user_latitude, user_longitude, radius_km=10):
+    from backend.provider_api.models import ServiceProviderProfile # import provider profile model
     providers = ServiceProviderProfile.objects.filter(
         service_category=service_category,
         # calculate lat/lon range for filtering within certain radius
         latitude__range=(user_latitude - radius_km / 111.0, user_latitude + radius_km / 111.0),
         longitude__range=(user_longitude - radius_km / 111.0, user_longitude + radius_km / 111.0)
     )
-=======
-def nearby_providers(request):
-    from backend.provider_api.models import ServiceProviderProfile # import provider profile model
+    return providers
+
+def nearby_providers(request, providers, user_latitude, user_longitude, radius_km=10):
     from backend.provider_api.views import haversine # ensure haversine function is defined or imported
     user_location = UserLocation.objects.filter(user=request.user).first()
     if not user_location:
         return JsonResponse([], safe=False)
->>>>>>> 30824264190476da85e2f83457da0082bf843c6e
 
     results = []
 
@@ -193,6 +192,7 @@ def nearby_providers(request):
 
 # displays after user selects a provider, shows provider details + booking info
 def provider_booking_info(provider_id):
+    from backend.provider_api.models import ServiceProviderProfile
     provider = ServiceProviderProfile.objects.filter(id=provider_id).first()
     if not provider:
         return JsonResponse({"error": "Provider not found"}, status=404)
