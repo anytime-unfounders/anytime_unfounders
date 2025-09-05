@@ -119,11 +119,21 @@ function JoinUsForm() {
 export default function LandingPage() {
   const [scrollY, setScrollY] = useState(0);
   const [introDone, setIntroDone] = useState(false);
+  const [mobileFormVisible, setMobileFormVisible] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Add timeout for mobile form appearance
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setMobileFormVisible(true);
+    }, 500);
+
+    return () => clearTimeout(timer);
   }, []);
 
   return (
@@ -146,8 +156,8 @@ export default function LandingPage() {
       <div
         className={
           introDone
-            ? "blur-md transition-all duration-700 2xl:translate-x-[-2em] max-md:scale-90 max-md:translate-x-290"
-            : "2xl:translate-x-[-20rem] max-md:scale-90 max-md:translate-x-120"
+            ? "blur-md transition-all duration-700 2xl:translate-x-[-2em] max-md:hidden max-md:duration-0"
+            : "2xl:translate-x-[-20rem] max-md:hidden"
         }
       >
         <AnimatedIntro onIntroDone={() => setIntroDone(true)} />
@@ -158,6 +168,8 @@ export default function LandingPage() {
         className={`fixed inset-0 flex items-center justify-center transition-all duration-700 ${
           introDone
             ? "translate-y-0 opacity-100"
+            : mobileFormVisible
+            ? "max-md:translate-y-0 max-md:opacity-100 md:translate-y-[100vh] md:opacity-0 md:pointer-events-none"
             : "translate-y-[100vh] opacity-0 pointer-events-none"
         }`}
         style={{ zIndex: 20 }}
