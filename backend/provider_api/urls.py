@@ -4,14 +4,14 @@ from django.urls import path, include
 from .forms import AccountInfoForm, BankingInfoForm, ServiceInfoForm, ProfilePhotosForm, ProviderRegistrationForm
 from . import views
 from django.contrib.auth import views as auth_views
+afjewaiofjwaeoi
 
 urlpatterns = [
     path('register/', views.register, name='register'),
     path('password_creation/', views.password_creation, name='password_creation'),
     #path('service_category/', views.service_category, name='service_category'),
     path('provider_profile/', views.provider_profile, name='provider_profile'),
-    path('provider/', include('django.contrib.auth.urls')),
-    path('register/', views.register, name='register'),
+    path('register/', views.registration, name='register'),
     path('accounts/', include('django.contrib.auth.urls')),
     # password reset tools
     path('password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
