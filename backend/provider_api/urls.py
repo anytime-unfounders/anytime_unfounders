@@ -11,7 +11,7 @@ urlpatterns = [
     #path('service_category/', views.service_category, name='service_category'),
     path('provider_profile/', views.provider_profile, name='provider_profile'),
     path('provider/', include('django.contrib.auth.urls')),
-    path('registration/', views.registration, name='registration'),
+    path('register/', views.register, name='register'),
     path('accounts/', include('django.contrib.auth.urls')),
     # password reset tools
     path('password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
