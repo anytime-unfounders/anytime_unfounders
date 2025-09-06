@@ -17,7 +17,10 @@ export default function SignIn() {
     // This proves the proxy is working without touching CORS.
     const fetchItems = async () => {
       try {
-        const res = await fetch("/api/backend/api/items/", { method: "GET" });
+        // CHANGED: use POST instead of GET
+        const res = await fetch("/api/backend/api/items/", { method: "POST" });
+        // If your backend expects JSON on POST, optionally add:
+        // headers: { "Content-Type": "application/json" }, body: JSON.stringify({})
         if (!res.ok) throw new Error(`Failed items fetch: ${res.status}`);
         const data = await res.json();
         setItems(data);
