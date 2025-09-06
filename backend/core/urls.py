@@ -16,11 +16,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from backend.provider_api import views as provider_views
+import backend.provider_api.views  # import views from provider_api app
 
 urlpatterns = [ # add root directory (i.e. homepage)
-    
-    path('', include('dj_rest_auth.registration.urls')),
-    
+    #root url (set as provider sign up for now for testing)
+
+    path ('', provider_views.register, name='register'), # set root to provider registration for now for testing
+
     # dj admin is backend-only tool, no need for frontend
     path("admin/", admin.site.urls), # admin site (for managing database models, users, etc.)
        
@@ -29,9 +32,8 @@ urlpatterns = [ # add root directory (i.e. homepage)
 
     # APIs
     path("api/user/", include("backend.user_api.urls")), # consumer app
-    path("api/provider/", include("backend.provider_api.urls")), # provider app
+    #path("api/provider/", include("backend.provider_api.urls")), # provider app
     path("api/payments/", include("backend.payments.urls")), # payments app
-    path('', include('dj_rest_auth.registration.urls')),
 
 
 ]
