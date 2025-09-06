@@ -64,7 +64,7 @@ def register(request):
     else:
         form = UserRegistrationForm()
 
-    return redirect('/password_creation/') # redirect to password creation page
+    return redirect('/api/user/password_creation/') # redirect to password creation page
 
 def password_creation(request):
     if request.method == 'POST':
@@ -264,7 +264,7 @@ def book_provider(request): # view for users to book a service provider
                             booked = True # set booking flag to True
                             break # exit loop after successful booking
                 if booked: # if booking was successful
-                    return redirect('/booking_success/', booking_id=booking.id)
+                    return redirect('/api/user/booking_success/', booking_id=booking.id)
                 else:
                     return JsonResponse({"status": "error", "message": "No available providers found"}, status=404)
             else:
@@ -273,7 +273,7 @@ def book_provider(request): # view for users to book a service provider
                 booking.user = request.user
                 booking.status = "pending" # set booking status to pending
                 booking.save() # save booking
-                return redirect('/booking_status/', booking_id=booking.id) # redirect to booking status page with booking ID
+                return redirect('/api/user/booking_status/', booking_id=booking.id) # redirect to booking status page with booking ID
         else:
             form = BookingForm()
     return JsonResponse({'request': request, 'template': 'book_provider.html', 'context': {'form': form}})
@@ -281,17 +281,17 @@ def book_provider(request): # view for users to book a service provider
 def try_again(request): # view to let user try booking again if no providers available
     if request.method == 'POST': # send user a reminder and ask if they want to try a different provider
         if 'yes' in request.POST: # if user chooses to try again
-            return redirect('/book_provider/') # redirect back to book_provider page, loop back to the same logic
+            return redirect('/api/user/book_provider/') # redirect back to book_provider page, loop back to the same logic
         elif 'no' in request.POST: # if user chooses not to try again
-            return redirect('/provider_not_responding/') # redirect to provider_not_responding page
+            return redirect('/api/user/provider_not_responding/') # redirect to provider_not_responding page
     return JsonResponse({'request': request, 'template': 'try_again.html'})
 
 def provider_not_responding(request): # redirect from book_provider when provider is ghosting
     if request.method == 'POST': # give user option to wait longer or cancel booking
         if 'wait' in request.POST: # if user chooses to wait longer (page w/ button "Wait Longer")
-            return redirect('/booking_status/') # redirect back to booking status page to wait longer, if ghosted again, loop back to provider_not_responding
+            return redirect('/api/user/booking_status/') # redirect back to booking status page to wait longer, if ghosted again, loop back to provider_not_responding
         elif 'cancel' in request.POST: # page with button "Cancel Booking"
-            return redirect('/cancel_booking/') # redirect to cancel_booking page
+            return redirect('/api/user/cancel_booking/') # redirect to cancel_booking page
     return JsonResponse({'request': request, 'template': 'provider_not_responding.html'})
 
 def booking_status(request, booking_id): # view to check booking status, redirected from provider_not_responding or book_provider
@@ -299,18 +299,18 @@ def booking_status(request, booking_id): # view to check booking status, redirec
     booking = Booking.objects.get(id=booking_id, user=request.user) # get booking object for the logged-in user based on booking_id
     if request.method == 'POST':
         if 'refresh' in request.POST: # if user chooses to refresh booking status
-            return redirect('/booking_status/') # redirect back to booking status page
+            return redirect('/api/user/booking_status/') # redirect back to booking status page
         elif 'cancel' in request.POST: # if user chooses to cancel booking
-            return redirect('/cancel_booking/') # redirect to cancel_booking page
-            
+            return redirect('/api/user/cancel_booking/') # redirect to cancel_booking page
+
         if ghosted_booking(booking):
             booking.status = 'ghosted'
             booking.save()
-            return redirect('/provider_not_responding/') # loop back to provider_not_responding page if booking is ghosted again
+            return redirect('/api/user/provider_not_responding/') # loop back to provider_not_responding page if booking is ghosted again
         else:
             booking.status = 'confirmed'
             booking.save()
-            return redirect('/booking_success/') # redirect to booking success page if booking is not ghosted
+            return redirect('/api/user/booking_success/') # redirect to booking success page if booking is not ghosted
 
 def booking_success(request): # view for successful booking
     return JsonResponse({'request': request, 'template': 'booking_success.html'})
@@ -323,7 +323,7 @@ def cancel_booking(request): # view to cancel a booking, redirected from provide
             if booking:
                 booking.status = 'cancelled'
                 booking.save()
-        return redirect('/')  # redirect to home page
+        return redirect('/api/user/')  # redirect to home page
     return JsonResponse({'request': request, 'template': 'cancel_booking.html'})
 
 
