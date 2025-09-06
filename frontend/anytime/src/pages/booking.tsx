@@ -1,8 +1,43 @@
 import { useRouter } from "next/router";
 import Image from "next/image";
+import { useState } from "react";
 
 export default function Booking() {
     const router = useRouter();
+    const [showCardModal, setShowCardModal] = useState(false);
+    const [cardName, setCardName] = useState("");
+    const [cardNumber, setCardNumber] = useState("");
+    const [expiry, setExpiry] = useState("");
+    const [cvc, setCvc] = useState("");
+    const serviceDetails = {
+        service: "Dog Walker",
+        provider: "Mary Cape",
+        price: "10/h"
+    };
+
+    function openPayment() {
+        setShowCardModal(true);
+    }
+
+    function handleCardSubmit(e: React.FormEvent) {
+        e.preventDefault();
+        // Minimal validation
+        if (!cardName || cardNumber.length < 12 || !expiry || cvc.length < 3) {
+            alert("Please enter valid card details (demo validation).");
+            return;
+        }
+        setShowCardModal(false);
+        // Navigate to confirmation page with service details (no card data in query)
+        router.push({
+            pathname: "/confirm-booking",
+            query: {
+                service: serviceDetails.service,
+                provider: serviceDetails.provider,
+                price: serviceDetails.price
+            }
+        });
+    }
+
     return (
         <div className="min-h-screen bg-[#F6F8FB] flex flex-col">
 
@@ -48,7 +83,7 @@ export default function Booking() {
                         </div>
                         <div className="flex gap-2 mb-2">
                             <span className="flex items-center gap-1 px-2 py-1 bg-yellow-100 rounded text-sm font-semibold"><span>★</span> 4.1</span>
-                            <span className="flex items-center gap-1 px-2 py-1 bg-green-100 rounded text-sm font-semibold"><span>$</span> 10/h</span>
+                            <span className="flex items-center gap-1 px-2 py-1 bg-green-100 rounded text-sm font-semibold"><span>$</span> 10/hr</span>
                         </div>
                         <button className="bg-[#C7B2F9] text-white px-4 py-1 rounded-lg text-sm font-semibold mb-2">Send Inquiry</button>
                         <p className="text-xs text-gray-700 mb-2">
@@ -107,11 +142,79 @@ export default function Booking() {
                             </div>
                         </div>
                         <div className="flex justify-end mt-2">
-                            <button className="bg-[#6C38B8] text-white px-8 py-2 rounded-full font-bold text-sm shadow" onClick={() => router.push("/thanksforbooking")}>BOOK</button>
+                            <button
+                                className="bg-[#6C38B8] text-white px-8 py-2 rounded-full font-bold text-sm shadow"
+                                onClick={openPayment}
+                            >
+                                BOOK
+                            </button>
                         </div>
                     </div>
                 </div>
             </section>
+
+            {/* Card Modal */}
+            {showCardModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center">
+                    <div className="absolute inset-0 bg-black opacity-40" onClick={() => setShowCardModal(false)}></div>
+                    <div className="relative bg-white rounded-xl shadow-lg w-full max-w-md p-6 z-10">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-lg font-bold">Payment</h3>
+                            <button className="text-gray-500" onClick={() => setShowCardModal(false)}>✕</button>
+                        </div>
+                        <form onSubmit={handleCardSubmit} className="flex flex-col gap-3">
+                            <label className="text-xs font-semibold">Name on card</label>
+                            <input
+                                value={cardName}
+                                onChange={(e) => setCardName(e.target.value)}
+                                className="px-3 py-2 border rounded"
+                                placeholder="Jane Doe"
+                                required
+                            />
+                            <label className="text-xs font-semibold">Card number</label>
+                            <input
+                                value={cardNumber}
+                                onChange={(e) => setCardNumber(e.target.value.replace(/\D/g, ""))}
+                                className="px-3 py-2 border rounded"
+                                placeholder="XXXX-XXXX-XXXX-XXXX"
+                                maxLength={19}
+                                required
+                            />
+                            <div className="flex gap-2">
+                                <div className="flex-1">
+                                    <label className="text-xs font-semibold">Expiry (MM/YY)</label>
+                                    <input
+                                        value={expiry}
+                                        onChange={(e) => setExpiry(e.target.value)}
+                                        className="px-3 py-2 border rounded w-full"
+                                        placeholder="12/26"
+                                        required
+                                    />
+                                </div>
+                                <div style={{ width: 100 }}>
+                                    <label className="text-xs font-semibold">CVC</label>
+                                    <input
+                                        value={cvc}
+                                        onChange={(e) => setCvc(e.target.value.replace(/\D/g, ""))}
+                                        className="px-3 py-2 border rounded w-full"
+                                        placeholder="123"
+                                        maxLength={4}
+                                        required
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="flex justify-between items-center mt-2">
+                                <div className="text-sm text-gray-600">Total: <span className="font-bold">{serviceDetails.price}</span></div>
+                                <div className="flex gap-2">
+                                    <button type="button" className="px-4 py-2 rounded border" onClick={() => setShowCardModal(false)}>Cancel</button>
+                                    <button type="submit" className="px-4 py-2 rounded bg-[#6C38B8] text-white font-bold">Proceed</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
 
             {/* Similar Services Section */}
             <section className="py-12 px-8">
