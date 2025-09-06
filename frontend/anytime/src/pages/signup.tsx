@@ -1,4 +1,8 @@
+// pages/test-api.tsx
 import { useState } from "react";
+
+// Removed duplicate default export TestAPI component
+
 
 // Title component
 function SignUpTitle() {
@@ -20,17 +24,15 @@ function UserTypeSelector({
   return (
     <div className="flex flex-col gap-6 w-full max-w-xs mx-auto">
       <button
-        className={`bg-[#8B46F6] hover:bg-[#6C38B8] text-white font-semibold rounded-full py-3 hover:cursor-pointer transition-all ${
-          selected === "customer" ? "ring-2 ring-[#8B46F6]" : ""
-        }`}
+        className={`bg-[#8B46F6] hover:bg-[#6C38B8] text-white font-semibold rounded-full py-3 hover:cursor-pointer transition-all ${selected === "customer" ? "ring-2 ring-[#8B46F6]" : ""
+          }`}
         onClick={() => onSelect("customer")}
       >
         Customer
       </button>
       <button
-        className={`bg-[#8B46F6] hover:cursor-pointer hover:bg-[#6C38B8] text-white font-semibold rounded-full py-3 transition-all ${
-          selected === "provider" ? "ring-2 ring-[#8B46F6]" : ""
-        }`}
+        className={`bg-[#8B46F6] hover:cursor-pointer hover:bg-[#6C38B8] text-white font-semibold rounded-full py-3 transition-all ${selected === "provider" ? "ring-2 ring-[#8B46F6]" : ""
+          }`}
         onClick={() => onSelect("provider")}
       >
         Provider
@@ -255,9 +257,8 @@ export default function SignUp() {
         <SignUpTitle />
         <div className="w-full flex justify-center">
           <div
-            className={`bg-white z-0 rounded-xl shadow-xl p-10 transition-all duration-700 ${
-              selected === "customer" ? "w-3/4 max-w-5xl" : "w-full max-w-xs"
-            } min-w-0`}
+            className={`bg-white z-0 rounded-xl shadow-xl p-10 transition-all duration-700 ${selected === "customer" ? "w-3/4 max-w-5xl" : "w-full max-w-xs"
+              } min-w-0`}
           >
             {selected === "customer" ? (
               <CustomerForm

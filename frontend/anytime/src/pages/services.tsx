@@ -28,7 +28,7 @@ export default function Services() {
 
   // Example data for demonstration
   const categories = [
-    { icon: "/service-icons/repair.svg", label: "Emergencies", hot: true },
+    { icon: "/service-icons/repair.svg", label: "InstantBooking", hot: true },
     { icon: "/service-icons/petcare.svg", label: "Petcare" },
     { icon: "/service-icons/chef.svg", label: "Catering" },
     { icon: "/service-icons/electrician.png", label: "Electricians" },
