@@ -8,8 +8,8 @@ import { useRouter } from "next/router";
 // Title component
 function SignUpTitle() {
   return (
-    <div className="w-full flex justify-center mb-8 px-4">
-      <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-black text-center">Sign Up.</h1>
+    <div className="w-full flex justify-center mb-2 px-4">
+      <h2 className="text-2xl font-bold mb-2 text-[#6C38B8] text-center">Sign Up</h2>
     </div>
   );
 }
@@ -29,7 +29,7 @@ function UserTypeSelector({
   };
 
   return (
-    <div className="flex flex-col gap-4 sm:gap-6 w-full max-w-xs mx-auto px-4">
+    <div className="flex flex-col gap-4 sm:gap-6 w-full max-w-xs mx-auto px-4  ">
       <button
         className={`bg-[#8B46F6] hover:bg-[#6C38B8] text-white font-semibold rounded-full py-3 px-4 hover:cursor-pointer transition-all text-sm sm:text-base ${selected === "customer" ? "ring-2 ring-[#8B46F6]" : ""
           }`}
@@ -354,14 +354,16 @@ export default function SignUp() {
   const handleBack = () => setSelected(null);
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-transparent p-4">
+    <main className="min-h-screen flex items-center justify-center bg-[#F6F8FB] p-4 ">
       <div className="w-full flex flex-col items-center justify-center transition-all duration-700 max-w-6xl">
-        <SignUpTitle />
         <div className="w-full flex justify-center">
           <div
             className={`bg-white z-0 rounded-xl shadow-xl p-6 sm:p-8 md:p-10 transition-all duration-700 ${selected === "customer" || selected === "provider" ? "w-full max-w-5xl" : "w-full max-w-sm"
               } min-w-0`}
           >
+            {/* moved title inside the rounded white box */}
+            <SignUpTitle />
+
             {selected === "customer" ? (
               <CustomerForm
                 form={form}
