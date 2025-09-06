@@ -16,19 +16,25 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from backend.provider_api import views as provider_views
+import backend.provider_api.views  # import views from provider_api app
 
-urlpatterns = [
-    path("admin/", admin.site.urls),
-    path("api/auth/", include("dj_rest_auth.urls")),
-    path("accounts/", include("allauth.urls")), # add allauth urls
-    path("api/user/", include("user_api.urls")),
-    path("api/provider/", include("provider_api.urls")),
+urlpatterns = [ # add root directory (i.e. homepage)
+    #root url (set as provider sign up for now for testing)
+
+    path ('', provider_views.register, name='register'), # set root to provider registration for now for testing
+
+    # dj admin is backend-only tool, no need for frontend
+    path("admin/", admin.site.urls), # admin site (for managing database models, users, etc.)
+       
+    # ONLY use for traditional server-rendered web pages (in other words probably won't need)
+    path("accounts/", include("allauth.urls")), # FOR USERS INTERACTING WITH DJ BUILT IN WEB FORMS: web based auth and account management--all routes from django allauth (registration, login, passwords, etc.)
 
     # APIs
-    path("api/user/", include("user_api.urls")), # consumer app
-    path("api/provider/", include("provider_api.urls")), # provider portal
+    path("api/user/", include("backend.user_api.urls")), # consumer app
+    #path("api/provider/", include("backend.provider_api.urls")), # provider app
     path("api/payments/", include("backend.payments.urls")), # payments app
-    path('api/auth/registration/', include('dj_rest_auth.registration.urls')),
+
 
 ]
 

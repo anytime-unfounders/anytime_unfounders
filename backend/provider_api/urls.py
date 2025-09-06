@@ -1,7 +1,7 @@
 #urls.py
 
 from django.urls import path, include
-from .forms import AccountInfoForm, BankingInfoForm, ServiceInfoForm, ProfilePhotosForm
+from .forms import AccountInfoForm, BankingInfoForm, ServiceInfoForm, ProfilePhotosForm, ProviderRegistrationForm
 from . import views
 from django.contrib.auth import views as auth_views
 

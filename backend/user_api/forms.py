@@ -1,8 +1,7 @@
 from django import forms
-from provider_api.models import ServiceCategory
 from .models import SelectServiceCategory
 from .models import Booking
-from provider_api.models import Provider
+from backend.provider_api.models import Provider, ServiceCategory
 
 class UserRegistrationForm(forms.Form):
     user_first_name = forms.CharField(label='First Name', max_length=200)

@@ -1,8 +1,10 @@
 from django.db import models
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 
-User=settings.AUTH_USER_MODEL
+User = get_user_model()
+
+#User=settings.AUTH_USER_MODEL
 
 class UserProfile(models.Model): # create profile model to extend user information
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -13,6 +15,11 @@ class UserProfile(models.Model): # create profile model to extend user informati
     postal_code = models.CharField(max_length=20, blank=True)
     province_state = models.CharField(max_length=100, blank=True)
     country = models.CharField(max_length=100, blank=True)
+    class Meta:
+        pass
+
+    def __str__(self):
+        return f"{self.user.username} Profile"
 
 class UserLocation(models.Model):
     user = models.OneToOneField(
