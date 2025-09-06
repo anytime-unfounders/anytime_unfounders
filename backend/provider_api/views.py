@@ -195,7 +195,7 @@ def update_location(request):
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
 
 def get_location(request):
-    if request.method == 'GET':
+    if request.method == 'POST':
         try:
             loc = UserLocation.objects.get(user=request.user)
             return JsonResponse({

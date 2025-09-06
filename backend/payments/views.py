@@ -14,13 +14,13 @@ class HomePageView(TemplateView):
 
 @csrf_exempt
 def stripe_config(request):
-    if request.method == 'GET':
+    if request.method == 'POST':
         stripe_config = {'publicKey': settings.STRIPE_PUBLISHABLE_KEY}
         return JsonResponse(stripe_config, safe=False)
 
 @csrf_exempt
 def create_checkout_session(request):
-    if request.method == 'GET':
+    if request.method == 'POST':
         domain_url = 'http://localhost:8000/'
         stripe.api_key = settings.STRIPE_SECRET_KEY
         try:
