@@ -9,6 +9,7 @@ from .xgb_registry import load_models
 from .fx import usd_to_cad
 from .models import PriceQuote, ProviderPricingStats
 from .serializers import QuoteRequestSerializer, QuoteResponseSerializer, QuoteForProvidersRequestSerializer
+from django.views.decorators.csrf import csrf_exempt
 
 def _predict_base_usd(req_obj):
     X = to_features(req_obj)
@@ -17,6 +18,7 @@ def _predict_base_usd(req_obj):
     spread_usd = float(spread_m.predict(X)[0])
     return base_usd, spread_usd, ver
 
+@csrf_exempt
 class PriceQuoteView(APIView):
     permission_classes = [permissions.AllowAny]
     def post(self, request):
@@ -36,6 +38,7 @@ class PriceQuoteView(APIView):
         payload["quote_id"] = pq.id
         return Response(QuoteResponseSerializer(payload).data, status=status.HTTP_200_OK)
 
+@csrf_exempt
 class QuoteForProvidersView(APIView):
     permission_classes = [permissions.AllowAny]
     def post(self, request):

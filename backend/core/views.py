@@ -4,11 +4,13 @@ from rest_framework import status
 from django.http import JsonResponse
 from django.contrib.auth.models import User
 from django.middleware.csrf import get_token
+from django.views.decorators.csrf import csrf_exempt
 
 
 def csrf(request):
     return JsonResponse({"csrfToken": get_token(request)})
 
+@csrf_exempt
 class RegisterView(APIView):
     def post(self, request):
         username = request.data.get('username')

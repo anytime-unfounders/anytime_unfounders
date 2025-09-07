@@ -22,7 +22,7 @@ from .views import csrf, RegisterView
 urlpatterns = [ # add root directory (i.e. homepage)
     #root url (set as provider sign up for now for testing)
 
-    path("csrf/", csrf, name="csrf"), # for getting CSRF token
+    path("api/csrf/", csrf, name="api-csrf"), # for getting CSRF token
     path("api/user/register/", RegisterView.as_view(), name="api-register"),
     path ('', provider_views.register, name='register'), # set root to provider registration for now for testing
 
