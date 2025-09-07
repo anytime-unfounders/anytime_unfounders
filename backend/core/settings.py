@@ -16,7 +16,7 @@ from celery.schedules import crontab
 import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-DEBUG=False
+DEBUG=True
 BASE_DIR = Path(__file__).resolve().parent.parent
 LOGS_DIR = BASE_DIR / "logs"
 LOGS_DIR.mkdir(exist_ok=True)
@@ -90,7 +90,7 @@ MIDDLEWARE = [
     "axes.middleware.AxesMiddleware",
     'allauth.account.middleware.AccountMiddleware',
     "django.contrib.messages.middleware.MessageMiddleware",
-    "django_otp.middleware.OTPMiddleware"
+    "django_otp.middleware.OTPMiddleware",
 ]
 
 CORS_ALLOWED_ORIGINS = [
@@ -99,6 +99,9 @@ CORS_ALLOWED_ORIGINS = [
     "https://anytime-six.vercel.app",
     
 ]
+
+CORS_ALLOW_CREDENTIALS = True
+
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
@@ -263,7 +266,8 @@ CSRF_TRUSTED_ORIGINS = [
     "https://anytime-six.vercel.app",
 ]
 
-
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "http")
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
