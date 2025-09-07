@@ -6,7 +6,8 @@ from .forms import UserRegistrationForm, UserPasswordCreationForm, UserLoginForm
 from django.views.decorators.csrf import csrf_exempt
 from .models import UserLocation
 
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+User = get_user_model()
 from .models import UserProfile
 from .forms import BookingForm
 from .models import Booking
