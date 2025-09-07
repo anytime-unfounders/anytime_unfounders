@@ -17,10 +17,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from backend.provider_api import views as provider_views
+from .views import *
 
 urlpatterns = [ # add root directory (i.e. homepage)
     #root url (set as provider sign up for now for testing)
 
+    path("api/user/register/", RegisterView.as_view(), name="api-register"),
     path ('', provider_views.register, name='register'), # set root to provider registration for now for testing
 
     # dj admin is backend-only tool, no need for frontend
