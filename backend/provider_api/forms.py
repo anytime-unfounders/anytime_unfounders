@@ -2,6 +2,8 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from .models import User, ServiceProviderProfile, ServiceCategory
+from django.core.files.storage import FileSystemStorage
+
 
 # forms.py
 class AccountInfoForm(UserCreationForm):
@@ -23,6 +25,23 @@ class AccountInfoForm(UserCreationForm):
     phone_number = forms.CharField(
         widget=forms.TextInput(attrs={'placeholder': 'Phone Number'})
     )
+
+    class Meta:
+        fields = ['user_first_name', 'user_last_name', 'user_email', 'user_phone', 'user_address_line_1', 'user_address_line_2', 'user_city', 'user_postal_code', 'user_province_state', 'user_country', 'user_password', 'user_password_confirm']
+
+
+
+class ProviderRegistrationForm(forms.Form):
+    provider_first_name = forms.CharField(label='First Name', max_length=200)
+    provider_last_name = forms.CharField(label='Last Name', max_length=200)
+    provider_email = forms.EmailField(label='Email Address', max_length=200)
+    provider_phone = forms.CharField(label='Phone Number', max_length=15)
+    provider_address_line_1 = forms.CharField(label='Address Line #1', max_length=300)
+    provider_address_line_2 = forms.CharField(label='Address Line #2', max_length=300, required=False)
+    provider_city = forms.CharField(label='City', max_length=100)
+    provider_postal_code = forms.CharField(label='Postal Code', max_length=20)
+    provider_province_state = forms.CharField(label='Province/State', max_length=100)
+    provider_country = forms.CharField(label='Country', max_length=100)
 
     class Meta:
         fields = ['user_first_name', 'user_last_name', 'user_email', 'user_phone', 'user_address_line_1', 'user_address_line_2', 'user_city', 'user_postal_code', 'user_province_state', 'user_country', 'user_password', 'user_password_confirm']
@@ -59,7 +78,7 @@ class ProviderProfileBuilding(forms.Form):
         business_name = forms.CharField(label='Service Name', max_length=200)
         provider_bio = forms.CharField(label='A 3-5 Sentence Introduction of Your Service', widget=forms.Textarea) # multi-line text box using Textarea widget
         add_cover_photo = forms.ImageField(label='Add a Cover Photo')
-        add_videos = forms.FileField(label='Add Video(s)', widget=forms.ClearableFileInput(attrs={'multiple': True}), required=False) # allow multiple file uploads
+        add_videos = forms.FileField(label='Add Video(s)', widget=forms.ClearableFileInput(attrs={'multiple': False}), required=False) # allow multiple file uploads
         pricing_structure = forms.CharField(label='Hourly Rate (in JSON format)', widget=forms.Textarea) # subject to change, dk how it works yet
         social_media_links = forms.CharField(label='Social Media Links / Website URL (in JSON format)', widget=forms.Textarea) # also subject to change 
         model = User
@@ -171,3 +190,11 @@ class ProfilePhotosForm(forms.ModelForm):
         fields = ['email']
         model = ServiceProviderProfile
         fields = ['profile_photo', 'cover_photo']
+
+class ProviderBookingResponseForm(forms.Form): # Form for provider to respond to booking requests
+    STATUS_CHOICES = [
+        ('confirmed', 'Confirm'),
+        ('rejected', 'Reject'),
+        ('pending', 'Pending'),
+    ]
+    status = forms.ChoiceField(choices=STATUS_CHOICES, label="Booking Response")

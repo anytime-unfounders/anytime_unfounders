@@ -24,7 +24,7 @@ export default function AnimatedIntro({ onIntroDone }: { onIntroDone: () => void
   }, [onIntroDone]);
 
   return (
-    <div className="flex w-full">
+    <div className="flex w-full  max-md:hidden ">
       {/* Phone slides in after motorcycle */}
       <PhoneSVG
         className={`scale-[0.3] absolute top-[-44rem] right-[-46.5rem] ${showPhone ? "animate-slide-in-left" : "opacity-0"

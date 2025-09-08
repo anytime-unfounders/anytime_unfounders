@@ -3,11 +3,12 @@ from django.db import models
 # Create your models here.
 # models.py
 from django.db import models
-from django_cryptography.fields import encrypt
+from encrypted_fields.fields import EncryptedCharField, EncryptedTextField, EncryptedDateField
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.contrib.auth.models import User
 from django.conf import settings
+
+# User = settings.AUTH_USER_MODEL
 
 class Provider(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -18,9 +19,11 @@ class Provider(models.Model):
     business_name = models.CharField(max_length=200, blank=True, null=True)
     bio = models.TextField(blank=True, null=True)
     cover_photo = models.ImageField(default='default_cover.jpg', upload_to='provider_cover_photos/', blank=True, null=True)
-    videos = models.ManyToManyField('Video', blank=True)
     pricing_structure = models.JSONField(default=dict, blank=True) # JSON field for saving structured data (complex data)
     social_media_URL = models.JSONField(default=dict, blank=True) # JSON field for saving social media links
+
+    class Meta:
+        app_label = 'provider_api'
 
 
 class ServiceCategory(models.Model):
@@ -59,10 +62,10 @@ class ServiceProviderProfile(models.Model):
     )
     service_description = models.TextField(max_length=500)
     
-    name_on_card = encrypt(models.CharField(max_length=100))
-    transit_number = encrypt(models.CharField(max_length=20))
-    institution_number = encrypt(models.CharField(max_length=20))
-    account_number = encrypt(models.CharField(max_length=50))
+    name_on_card = EncryptedCharField(max_length=100)
+    transit_number = EncryptedCharField(max_length=20)
+    institution_number = EncryptedCharField(max_length=20)
+    account_number = EncryptedCharField(max_length=30)
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
     is_available = models.BooleanField(default=False)
@@ -72,7 +75,17 @@ class ServiceProviderProfile(models.Model):
         return f"{self.user.get_full_name()} - {self.service_category.name if self.service_category else 'No Category'}"
     
 class UserLocation(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now=True) 
+
+
+class Video(models.Model):
+    provider = models.ForeignKey(
+        Provider,
+        on_delete=models.CASCADE,
+        related_name="videos"   # Provider.videos now works
+    )
+    title = models.CharField(max_length=255)
+    url = models.URLField()

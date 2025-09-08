@@ -1,4 +1,7 @@
 from django import forms
+from .models import SelectServiceCategory
+from .models import Booking
+from backend.provider_api.models import Provider, ServiceCategory
 
 class UserRegistrationForm(forms.Form):
     user_first_name = forms.CharField(label='First Name', max_length=200)
@@ -45,3 +48,25 @@ class UserPasswordResetForm(forms.Form):
 
     class Meta:
         fields = ['email']
+
+class ProviderCategoryForm(forms.Form):  # custom form for selecting service category (subcategories), for filtering
+    provider_service_category = forms.ModelChoiceField(
+        queryset=ServiceCategory.objects.all(),
+        label='Service Category',
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    latitude = forms.FloatField(label='Latitude', required=False)
+    longitude = forms.FloatField(label='Longitude', required=False)
+
+    class Meta:
+        fields = ['provider_service_category', 'latitude', 'longitude']
+
+class SelectServiceCategoryForm(forms.ModelForm): # model form for saving directly to the database (save to SelectServiceCategory in models.py)
+    class Meta:
+        model = SelectServiceCategory
+        fields = ['selected_category']
+
+class BookingForm(forms.ModelForm): # form for booking a service, using model form from Booking
+    class Meta: # specify model and fields to include in the form
+        model = Booking
+        fields = ['provider', 'service_category', 'service_date', 'scheduled_time', 'notes']

@@ -12,11 +12,19 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
+from celery.schedules import crontab
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+DEBUG=True
 BASE_DIR = Path(__file__).resolve().parent.parent
 LOGS_DIR = BASE_DIR / "logs"
 LOGS_DIR.mkdir(exist_ok=True)
+STATICFILES_DIRS = [BASE_DIR / 'static']
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_URL = '/static/'
+AUTH_USER_MODEL = "provider_api.User"
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 
 # Quick-start development settings - unsuitable for production
@@ -27,9 +35,8 @@ SECRET_KEY = 'django-insecure-4kxt-3j(u*5puknh!#aft!d^r8(0@&(fvs$q$(29hk1hm&%_(h
 STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "sk_test_51RynRHBf33ek24lBZjV43c5DTVMWzzLI6M8DkqdNEc049K422sHuzWE6AFwG8XqIK7gXQ9DWjsG8QSTPAqnE2iWE00op9c1NWr")
 STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY", "pk_test_51RynRHBf33ek24lB8mX4vYH5pXG6mJ3eYJ1oXKXo2Yp0Yt2b7r0gW7y3w5Zkz5yD8Fz4eE6Qk3JqF7jH9h8j3QO00wz5c1L2")
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", '*']
 SITE_ID=1
 
 # Application definition
@@ -50,6 +57,7 @@ INSTALLED_APPS = [
     "axes",
     "django_otp",
     "django_otp.plugins.otp_totp",
+    "formtools",
 
     # Allauth
     "allauth",
@@ -62,11 +70,11 @@ INSTALLED_APPS = [
     "dj_rest_auth.registration",
 
     # Local apps
-    "accounts",
-    "user_api",
-    "provider_api",
-    "pricing",
-    "payments.apps.PaymentsConfig",
+    "backend.accounts",
+    "backend.user_api",
+    "backend.provider_api",
+    "backend.pricing",
+    "backend.payments.apps.PaymentsConfig",
 ]
    
 
@@ -74,6 +82,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -81,13 +90,18 @@ MIDDLEWARE = [
     "axes.middleware.AxesMiddleware",
     'allauth.account.middleware.AccountMiddleware',
     "django.contrib.messages.middleware.MessageMiddleware",
-    "django_otp.middleware.OTPMiddleware"
+    "django_otp.middleware.OTPMiddleware",
 ]
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://localhost:3000",
+    "https://anytime-six.vercel.app",
+    
 ]
+
+CORS_ALLOW_CREDENTIALS = True
+
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
@@ -130,12 +144,15 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
     }
 }
 
+db_from_env = dj_database_url.config(conn_max_age=600, ssl_require=True)
+if db_from_env:
+    DATABASES["default"].update(db_from_env)
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -242,9 +259,15 @@ LOGGING = {
     },
 }
 
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "https://anytime-hq-unfounders-fc78f29bb907.herokuapp.com",
+    "https://anytime-six.vercel.app",
+]
 
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "http")
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
@@ -252,3 +275,14 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = "anytimeamam@gmail.com"
 EMAIL_HOST_PASSWORD = "mewo ieow vpsc rzaw"
+
+
+# Celery Configuration
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_BEAT_SCHEDULE = {
+    'check-ghosted-bookings': { # scheduled task to check for ghosted bookings every 5 minutes, automated
+        'task': 'user_api.tasks.check_ghosted_bookings',
+        'schedule': crontab(minute='*/5'),  # every 5 minutes
+    },
+}

@@ -6,6 +6,7 @@ from django.views.generic.base import TemplateView
 import stripe
 # Create your views here.
 from django.views.generic.base import TemplateView
+from .forms import BankingInformationForm
 
 class HomePageView(TemplateView):
     template_name = 'home.html'
@@ -13,13 +14,13 @@ class HomePageView(TemplateView):
 
 @csrf_exempt
 def stripe_config(request):
-    if request.method == 'GET':
+    if request.method == 'POST':
         stripe_config = {'publicKey': settings.STRIPE_PUBLISHABLE_KEY}
         return JsonResponse(stripe_config, safe=False)
 
 @csrf_exempt
 def create_checkout_session(request):
-    if request.method == 'GET':
+    if request.method == 'POST':
         domain_url = 'http://localhost:8000/'
         stripe.api_key = settings.STRIPE_SECRET_KEY
         try:
@@ -82,3 +83,31 @@ def stripe_webhook(request):
         # TODO: run some custom code here
 
     return HttpResponse(status=200)
+
+def banking_info(request):
+    if request.method == 'POST':
+        form = BankingInformationForm(request.POST)
+        if form.is_valid():
+            stripe.Account.create(
+                type="custom",
+                country=form.cleaned_data['country'],
+                email=form.cleaned_data['email'],
+                business_type="individual",
+                individual={
+                    "first_name": form.cleaned_data['first_name'],
+                    "last_name": form.cleaned_data['last_name'],
+                    "email": form.cleaned_data['email'],
+                    "phone": form.cleaned_data['phone'],
+                    "address": {
+                        "line1": form.cleaned_data['address_line1'],
+                        "city": form.cleaned_data['address_city'],
+                        "state": form.cleaned_data['address_state'],
+                        "postal_code": form.cleaned_data['address_postal_code'],
+                        "country": form.cleaned_data['address_country'],
+                    },
+                },
+            )
+            return JsonResponse({'status': 'success'})
+    else:
+        form = BankingInformationForm()
+    return render(request, 'banking_info.html', {'form': form})
