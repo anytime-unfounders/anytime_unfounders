@@ -119,15 +119,9 @@ type Service = {
 const CATEGORY_META: Record<string, { title: string; icon: string; blurb: string; chips: string[] }> = {
     catering: {
         title: "Electricians",
-        icon: "/service-icons/electrician.jpg",
+        icon: "/service-icons/electrician.png",
         blurb: "Repairs, installations, rewiring & more — book licensed electricians near you.",
         chips: ["Repairs", "Installations", "Panel Updgrade", "EV Charger", "LED Installation"],
-    },
-    electricians: {
-        title: "Electricians",
-        icon: "/service-icons/electrician.png",
-        blurb: "Licensed pros for installs, repairs, and inspections.",
-        chips: ["Emergency", "Installation", "Rewiring", "Inspection"],
     },
 };
 
