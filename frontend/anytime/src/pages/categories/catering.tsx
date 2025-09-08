@@ -2,6 +2,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
 
+
 function InstantBookingBox({ category }: { category: string }) {
     const router = useRouter();
     const [date, setDate] = useState<string>(() =>
@@ -123,12 +124,7 @@ const CATEGORY_META: Record<string, { title: string; icon: string; blurb: string
         blurb: "Private chefs, event catering, meal prep & more — book vetted pros near you.",
         chips: ["Private Chef", "Buffet", "Cocktail Party", "Meal Prep", "Vegan", "Gluten-Free"],
     },
-    electricians: {
-        title: "Electricians",
-        icon: "/service-icons/electrician.png",
-        blurb: "Licensed pros for installs, repairs, and inspections.",
-        chips: ["Emergency", "Installation", "Rewiring", "Inspection"],
-    },
+
 };
 
 const MOCK_RESULTS: Service[] = [
@@ -221,7 +217,14 @@ export default function CategoryPage() {
 
                 <aside className="h-fit rounded-2xl border bg-white p-4 shadow-sm md:sticky md:top-20">
 
-                    <InstantBookingBox category={meta.title} />
+                    <div className="mb-4">
+                        <Link
+                            href="/instant-booking"
+                            className="w-full rounded-xl bg-[#8B46F6] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#6C38B8] block text-center"
+                        >
+                            Instant Book →
+                        </Link>
+                    </div>
 
                     <div className="my-4 h-px bg-gray-200" />
 
