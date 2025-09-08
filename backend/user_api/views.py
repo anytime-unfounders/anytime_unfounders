@@ -20,7 +20,7 @@ from payments.views import banking_info
 # ============================
 # USER REGISTRATION
 # ============================
-
+@csrf_exempt
 def register(request):
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
@@ -67,6 +67,7 @@ def register(request):
 
     return redirect('/api/user/password_creation/') # redirect to password creation page
 
+@csrf_exempt
 def password_creation(request):
     if request.method == 'POST':
         form = UserPasswordCreationForm(request.POST)
@@ -87,6 +88,7 @@ def password_creation(request):
 # LOGIN/LOGOUT
 # ============================
 
+@csrf_exempt
 def login(request):
     if request.method == 'POST':
         form = UserLoginForm(request.POST)
@@ -101,6 +103,7 @@ def login(request):
         form = UserLoginForm()
     return JsonResponse({"status": "ok"}, status=200)
 
+@csrf_exempt
 def logout(request):
     if request.method == 'POST':
         form = UserLogoutForm(request.POST)
@@ -132,6 +135,9 @@ def update_user_location(request):
 # ============================
 
 # for users to select a service category and see nearby providers in that category
+
+
+@csrf_exempt
 def provider_category(request):
     if request.method == 'POST':
         form = ProviderCategoryForm(request.POST)
@@ -155,6 +161,8 @@ def provider_category(request):
     return JsonResponse({"status": "ok", "category": service_category, "providers": results}, status=200)
 
 # function that filters providers based on user location and selected category, pushes to provider_category
+
+@csrf_exempt
 def get_filtered_providers(service_category, user_latitude, user_longitude, radius_km=10):
     from backend.provider_api.models import ServiceProviderProfile # import provider profile model
     providers = ServiceProviderProfile.objects.filter(
@@ -164,6 +172,8 @@ def get_filtered_providers(service_category, user_latitude, user_longitude, radi
         longitude__range=(user_longitude - radius_km / 111.0, user_longitude + radius_km / 111.0)
     )
     return providers
+
+@csrf_exempt
 
 def nearby_providers(request, providers, user_latitude, user_longitude, radius_km=10):
     from backend.provider_api.views import haversine # ensure haversine function is defined or imported
@@ -192,6 +202,7 @@ def nearby_providers(request, providers, user_latitude, user_longitude, radius_k
 ## FRONTEND CALLS ENDPOINT --> displays list of providers --> user selects a provider
 
 # displays after user selects a provider, shows provider details + booking info
+@csrf_exempt
 def provider_booking_info(provider_id):
     from backend.provider_api.models import ServiceProviderProfile
     provider = ServiceProviderProfile.objects.filter(id=provider_id).first()
@@ -215,6 +226,7 @@ def provider_booking_info(provider_id):
     return JsonResponse({"status": "success", "data": booking_info}, status=200) # return booking info to frontend
 
 # filters providers based on user location ONLY (NO category)
+@csrf_exempt
 def nearby_providers(request):
     user_location = UserLocation.objects.filter(user=request.user).first()
     if not user_location:
@@ -236,6 +248,7 @@ def nearby_providers(request):
 # USER BOOKING LOGIC TREE
 # ============================
 
+@csrf_exempt
 def book_provider(request): # view for users to book a service provider
     from backend.provider_api.views import haversine # ensure haversine function is defined or imported
     from backend.provider_api.models import ServiceProviderProfile # import provider profile model
@@ -279,6 +292,8 @@ def book_provider(request): # view for users to book a service provider
             form = BookingForm()
     return JsonResponse({'request': request, 'template': 'book_provider.html', 'context': {'form': form}})
 
+
+@csrf_exempt
 def try_again(request): # view to let user try booking again if no providers available
     if request.method == 'POST': # send user a reminder and ask if they want to try a different provider
         if 'yes' in request.POST: # if user chooses to try again
@@ -287,6 +302,7 @@ def try_again(request): # view to let user try booking again if no providers ava
             return redirect('/api/user/provider_not_responding/') # redirect to provider_not_responding page
     return JsonResponse({'request': request, 'template': 'try_again.html'})
 
+@csrf_exempt
 def provider_not_responding(request): # redirect from book_provider when provider is ghosting
     if request.method == 'POST': # give user option to wait longer or cancel booking
         if 'wait' in request.POST: # if user chooses to wait longer (page w/ button "Wait Longer")
@@ -295,6 +311,8 @@ def provider_not_responding(request): # redirect from book_provider when provide
             return redirect('/api/user/cancel_booking/') # redirect to cancel_booking page
     return JsonResponse({'request': request, 'template': 'provider_not_responding.html'})
 
+
+@csrf_exempt
 def booking_status(request, booking_id): # view to check booking status, redirected from provider_not_responding or book_provider
     from backend.provider_api.views import ghosted_booking
     booking = Booking.objects.get(id=booking_id, user=request.user) # get booking object for the logged-in user based on booking_id
@@ -313,9 +331,12 @@ def booking_status(request, booking_id): # view to check booking status, redirec
             booking.save()
             return redirect('/api/user/booking_success/') # redirect to booking success page if booking is not ghosted
 
+@csrf_exempt
 def booking_success(request): # view for successful booking
     return JsonResponse({'request': request, 'template': 'booking_success.html'})
 
+
+@csrf_exempt
 def cancel_booking(request): # view to cancel a booking, redirected from provider_not_responding
     if request.method == 'POST':
         booking_id = request.POST.get('booking_id')
@@ -332,6 +353,7 @@ def cancel_booking(request): # view to cancel a booking, redirected from provide
 # USER HOMEPAGE
 # ============================
 
+@csrf_exempt
 def homepage(request):
     upcoming_bookings = []
     if request.user.is_authenticated:
@@ -347,7 +369,7 @@ def homepage(request):
 # ============================
 # PROVIDER VIEWING REQUESTS
 # ============================
-
+@csrf_exempt
 def provider_requests(request): # connection to provider_api: view for providers to see booking requests, sorted by distance if location available
     from backend.provider_api.models import ServiceProviderProfile # import provider profile model
     from backend.provider_api.views import haversine # ensure haversine function is defined or imported
