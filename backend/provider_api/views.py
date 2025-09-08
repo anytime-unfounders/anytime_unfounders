@@ -1,7 +1,7 @@
 # Create your views here.
 # views.py
 from formtools.wizard.views import SessionWizardView
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.urls import reverse
 from .forms import AccountInfoForm, BankingInfoForm, ServiceInfoForm, ProfilePhotosForm, ProviderProfileBuilding, ProviderRegistrationForm, ProviderPasswordCreationForm, ProviderLoginForm, ProviderLogoutForm
 from .models import User, ServiceProviderProfile
@@ -10,6 +10,8 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 from .models import UserLocation
 from django.db.models import F
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from math import radians, sin, cos, sqrt, atan2
 from django.utils import timezone
@@ -31,10 +33,7 @@ TEMPLATES = {
     "profile_photos": "registration/profile_photos.html",
 }
 
-# ============================
-# PROVIDER REGISTRATION
-# ============================
-
+@csrf_exempt
 def register(request):
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
@@ -42,7 +41,7 @@ def register(request):
         form = ProviderRegistrationForm(request.POST)
         # check whether it's valid:
         if form.is_valid():
-            # extract data
+            # process the data in form.cleaned_data (variables can now be used-- save to database, send email, etc.)
             provider_first_name = form.cleaned_data['provider_first_name']
             provider_last_name = form.cleaned_data['provider_last_name']
             provider_email = form.cleaned_data['provider_email']
@@ -53,88 +52,29 @@ def register(request):
             provider_postal_code = form.cleaned_data['provider_postal_code']
             provider_province_state = form.cleaned_data['provider_province_state']
             provider_country = form.cleaned_data['provider_country']
-
-            # create user object
-            user = User.objects.create_user(
-                username=provider_first_name + provider_last_name,
-                email=provider_email,
-                first_name=provider_first_name,
-                last_name=provider_last_name,
-                password=form.cleaned_data['provider_password'],
-            )
-
-            # create service provider profile
-            ServiceProviderProfile.objects.create(
-                user=user,
-                phone_number=provider_phone,
-                address_line_1=provider_address_line_1,
-                address_line_2=provider_address_line_2,
-                city=provider_city,
-                postal_code=provider_postal_code,
-                province_state=provider_province_state,
-                country=provider_country,
-            )
-            login(request, user)  # log the user in after registration
             # redirect to a page after successfully submitting form:
-            return JsonResponse({"status": "success", "message": "Registration successful"}, status=200)
+            return HttpResponseRedirect('/thanks/') 
 
     # if any other method, use ProviderRegistrationForm to generate form, validate, access cleaned data
     else:
         form = ProviderRegistrationForm()
 
-    return JsonResponse({'status': 'success', 'message': 'Redirecting to provider registration'}, status=200)
+    return render(request, 'name.html', {'form': form}) # return form available as a variable named 'form'
 
+@csrf_exempt
 def password_creation(request):
     if request.method == 'POST':
         form = ProviderPasswordCreationForm(request.POST)
         if form.is_valid():
             provider_new_password = form.cleaned_data['provider_new_password']
             provider_confirm_password = form.cleaned_data['provider_confirm_password']
-            if provider_new_password == provider_confirm_password: # check if passwords match
-                request.user.set_password(provider_new_password)
-                request.user.save()
-                # Process the password change (e.g., update the user's password)
-                return JsonResponse({"status": "success", "message": "Password created successfully"}, status=200)
-            else:
-                form.add_error('provider_confirm_password', 'Passwords do not match.')
+            # Process the password change (e.g., update the user's password)
+            return HttpResponseRedirect('/thanks/')
     else:
         form = ProviderPasswordCreationForm()
-    return JsonResponse({"status": "success", "message": "Redirecting to provider profile"}, status=200)
+    return render(request, 'name.html', {'form': form})
 
-
-# ============================
-# LOGIN/LOGOUT
-# ============================
-
-def login(request):
-    if request.method == 'POST':
-        form = ProviderLoginForm(request.POST)
-        if form.is_valid():
-            provider_username = form.cleaned_data['provider_username']
-            provider_password = form.cleaned_data['provider_password']
-            user = authenticate(request, username=provider_username, password=provider_password)
-            if user is not None:
-                login(request, user)
-                return JsonResponse({'status': 'success', 'message': 'Login successful'}, status=200)
-    else:
-        form = ProviderLoginForm()
-    return JsonResponse({'status': 'success', 'message': 'Redirecting to provider login'}, status=200)
-
-
-def logout(request):
-    if request.method == 'POST':
-        form = ProviderLogoutForm(request.POST)
-        if form.is_valid():
-            logout(request) # validates empty logout form, calls function to log out user
-            return JsonResponse({'status': 'success', 'message': 'Logout successful'}, status=200)
-    else:
-        form = ProviderLogoutForm()
-    return JsonResponse({'status': 'success', 'message': 'Redirecting to provider logout'}, status=200)
-
-# ============================
-# PROVIDER PROFILE SETUP
-# ============================
-
+@csrf_exempt
 def provider_profile(request):
     if request.method == 'POST':
         form = ProviderProfileBuilding(request.POST, request.FILES)
@@ -150,34 +90,39 @@ def provider_profile(request):
             add_videos = form.cleaned_data['add_videos']
             pricing_structure = form.cleaned_data['pricing_structure']
             social_media_links = form.cleaned_data['social_media_links']
-
-            # create + save provider profile object
-            provider_profile = ServiceProviderProfile(
-                user=request.user,
-                service_category=provider_service_category,
-                profile_picture=add_profile_picture,
-                phone_number=provider_phone_number,
-                email=provider_email,
-                business_name=business_name,
-                bio=provider_bio,
-                cover_photo=add_cover_photo,
-                videos=add_videos,
-                pricing_structure=pricing_structure,
-                social_media_links=social_media_links
-            )
-            provider_profile.save()
-            login(request, provider_profile.user)  # log the user in after creating the profile
-        return JsonResponse({'status': 'success', 'message': 'Profile created successfully'}, status=200)
+            return HttpResponseRedirect('/thanks/')
     else:
         form = ProviderProfileBuilding()
-    return JsonResponse({'status': 'success', 'message': 'Redirecting to provider profile setup'}, status=200)
-
-
-# ============================
-# PROVIDER LOCATION STUFF
-# ============================
+    return render(request, 'name.html', {'form': form})
 
 @csrf_exempt
+def login(request):
+    if request.method == 'POST':
+        form = ProviderLoginForm(request.POST)
+        if form.is_valid():
+            provider_username = form.cleaned_data['provider_username']
+            provider_password = form.cleaned_data['provider_password']
+            user = authenticate(request, username=provider_username, password=provider_password)
+            if user is not None:
+                login(request, user)
+                return HttpResponseRedirect('/thanks/')
+    else:
+        form = ProviderLoginForm()
+    return render(request, 'name.html', {'form': form})    
+
+@csrf_exempt
+def logout(request):
+    if request.method == 'POST':
+        form = ProviderLogoutForm(request.POST)
+        if form.is_valid():
+            logout(request) # validates empty logout form, calls function to log out user
+            return HttpResponseRedirect('/thanks/')
+    else:
+        form = ProviderLogoutForm()
+
+
+@csrf_exempt
+
 def update_location(request):
     if request.method == 'POST':
         try:
@@ -194,8 +139,9 @@ def update_location(request):
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
 
+@csrf_exempt
 def get_location(request):
-    if request.method == 'POST':
+    if request.method == 'GET':
         try:
             loc = UserLocation.objects.get(user=request.user)
             return JsonResponse({
@@ -207,6 +153,62 @@ def get_location(request):
             return JsonResponse({'status': 'error', 'message': 'Location not found'}, status=404)
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
 
+
+@csrf_exempt
+def nearby_providers(request):
+    user_lat = float(request.GET.get("lat"))
+    user_lon = float(request.GET.get("lon"))
+    radius_km = 10  # e.g. search within 10km
+    
+    providers = ServiceProviderProfile.objects.filter(is_available=True)
+
+    # Simple distance filter (Haversine formula recommended for accuracy)
+    results = []
+    for p in providers:
+        if p.latitude and p.longitude:
+            # rough distance calc
+            dx = (user_lat - p.latitude) * 111  # km per lat
+            dy = (user_lon - p.longitude) * 111  # km per lon (approx)
+            distance = (dx**2 + dy**2) ** 0.5
+            if distance <= radius_km:
+                results.append({
+                    "id": p.id,
+                    "name": p.user.get_full_name(),
+                    "lat": p.latitude,
+                    "lon": p.longitude,
+                    "service": p.service_description,
+                })
+
+    return JsonResponse(results, safe=False)
+
+
+@csrf_exempt
+def providers_by_category(request):
+    category = request.GET.get("category")  # Get the category from the request
+    user_lat = float(request.GET.get("lat"))
+    user_lon = float(request.GET.get("lon"))
+    radius_km = 10  # search within 10km
+    providers = ServiceProviderProfile.objects.filter(is_available=True, service_category__slug=category)
+
+    results = []
+    for p in providers:
+        if p.latitude and p.longitude:
+            # rough distance calc
+            dx = (user_lat - p.latitude) * 111  # km per lat
+            dy = (user_lon - p.longitude) * 111  # km per lon (approx)
+            distance = (dx**2 + dy**2) ** 0.5
+            if distance <= radius_km:
+                results.append({
+                    "id": p.id,
+                    "name": p.user.get_full_name(),
+                    "lat": p.latitude,
+                    "lon": p.longitude,
+                    "service": p.service_description,
+                })
+    # sort by distance (using haversine formula)
+    results.sort(key=lambda x: haversine(user_lat, user_lon, x["lat"], x["lon"]))
+    return JsonResponse(results, safe=False)
+
 def haversine(lat1, lon1, lat2, lon2):  # Haversine formula to calculate distance for more precision
     R = 6371  # Earth radius in kilometers
     dlat = radians(lat2 - lat1)
@@ -215,11 +217,7 @@ def haversine(lat1, lon1, lat2, lon2):  # Haversine formula to calculate distanc
     c = 2 * atan2(sqrt(a), sqrt(1 - a))
     return R * c
 
-
-# ============================
-# PROVIDER BOOKING LOGIC
-# ============================
-
+@csrf_exempt
 def respond_to_booking(request, booking_id): # view for provider to respond to booking request
     from user_api.models import Booking
     booking = Booking.objects.filter(id=booking_id, provider__user=request.user).first()
@@ -236,8 +234,9 @@ def respond_to_booking(request, booking_id): # view for provider to respond to b
     else:
         form = ProviderBookingResponseForm()
 
-    return JsonResponse({'status': 'success', 'message': 'Redirecting to respond to booking'}, status=200)
+    return render(request, 'respond_to_booking.html', {'form': form, 'booking': booking})
 
+@csrf_exempt
 def ghosted_booking(request, booking_id):
     from user_api.models import Booking
     booking = Booking.objects.filter(id=booking_id, provider__user=request.user).first()
