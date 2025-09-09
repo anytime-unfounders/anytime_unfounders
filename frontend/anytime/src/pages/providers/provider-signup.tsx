@@ -28,7 +28,9 @@ export default function ProviderSignup() {
   });
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     const { name, value } = e.target;
 
@@ -49,7 +51,10 @@ export default function ProviderSignup() {
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, fieldName: string) => {
+  const handleFileChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    fieldName: string
+  ) => {
     const files = Array.from(e.target.files || []);
     if (fieldName === "profilePhoto") {
       setFormData((prev) => ({
@@ -101,13 +106,20 @@ export default function ProviderSignup() {
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100 flex items-center justify-center px-4">
       <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-2xl">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">Join as a Provider</h1>
-          <p className="text-gray-600">Start offering your services on Anytime</p>
+          <h1 className="text-4xl font-bold text-gray-800 mb-2">
+            Join as a Provider
+          </h1>
+          <p className="text-gray-600">
+            Start offering your services on Anytime
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label htmlFor="businessName" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="businessName"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Business Name *
             </label>
             <input
@@ -123,7 +135,10 @@ export default function ProviderSignup() {
           </div>
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Email Address *
             </label>
             <input
@@ -139,7 +154,10 @@ export default function ProviderSignup() {
           </div>
 
           <div>
-            <label htmlFor="businessType" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="businessType"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Service Category *
             </label>
             <select
@@ -164,7 +182,10 @@ export default function ProviderSignup() {
           </div>
 
           <div>
-            <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="phone"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Phone Number *
             </label>
             <input
@@ -180,7 +201,10 @@ export default function ProviderSignup() {
           </div>
 
           <div>
-            <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="address"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Business Address *
             </label>
             <input
@@ -196,7 +220,10 @@ export default function ProviderSignup() {
           </div>
 
           <div>
-            <label htmlFor="website" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="website"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Website (Optional)
             </label>
             <input
@@ -211,7 +238,10 @@ export default function ProviderSignup() {
           </div>
 
           <div>
-            <label htmlFor="businessDescription" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="businessDescription"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Business Description *
             </label>
             <textarea
@@ -227,7 +257,10 @@ export default function ProviderSignup() {
           </div>
 
           <div>
-            <label htmlFor="profilePhoto" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="profilePhoto"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Profile Photo *
             </label>
             <input
@@ -239,11 +272,16 @@ export default function ProviderSignup() {
               required
               className="w-full"
             />
-            <p className="text-xs text-gray-500 mt-1">Upload a professional headshot or business logo</p>
+            <p className="text-xs text-gray-500 mt-1">
+              Upload a professional headshot or business logo
+            </p>
           </div>
 
           <div>
-            <label htmlFor="coverPhotos" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="coverPhotos"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Cover Photos *
             </label>
             <input
@@ -256,11 +294,16 @@ export default function ProviderSignup() {
               required
               className="w-full"
             />
-            <p className="text-xs text-gray-500 mt-1">Upload high-quality images showcasing your work</p>
+            <p className="text-xs text-gray-500 mt-1">
+              Upload high-quality images showcasing your work
+            </p>
           </div>
 
           <div>
-            <label htmlFor="portfolioPhotos" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="portfolioPhotos"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Portfolio Photos *
             </label>
             <input
@@ -273,11 +316,16 @@ export default function ProviderSignup() {
               required
               className="w-full"
             />
-            <p className="text-xs text-gray-500 mt-1">Upload examples of your previous work and projects</p>
+            <p className="text-xs text-gray-500 mt-1">
+              Upload examples of your previous work and projects
+            </p>
           </div>
 
           <div>
-            <label htmlFor="videos" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="videos"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Videos (Optional)
             </label>
             <input
@@ -289,19 +337,28 @@ export default function ProviderSignup() {
               onChange={(e) => handleFileChange(e, "videos")}
               className="w-full"
             />
-            <p className="text-xs text-gray-500 mt-1">Upload videos showing your work process or completed projects</p>
+            <p className="text-xs text-gray-500 mt-1">
+              Upload videos showing your work process or completed projects
+            </p>
           </div>
 
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-800">Pricing Structure</h3>
+            <h3 className="text-lg font-semibold text-gray-800">
+              Pricing Structure
+            </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label htmlFor="hourlyRate" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="hourlyRate"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Hourly Rate *
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+                    $
+                  </span>
                   <input
                     type="number"
                     id="hourlyRate"
@@ -318,11 +375,16 @@ export default function ProviderSignup() {
               </div>
 
               <div>
-                <label htmlFor="minimumCharge" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="minimumCharge"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Minimum Charge *
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+                    $
+                  </span>
                   <input
                     type="number"
                     id="minimumCharge"
@@ -339,11 +401,16 @@ export default function ProviderSignup() {
               </div>
 
               <div>
-                <label htmlFor="emergencyRate" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="emergencyRate"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Emergency Rate *
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+                    $
+                  </span>
                   <input
                     type="number"
                     id="emergencyRate"
@@ -362,11 +429,16 @@ export default function ProviderSignup() {
           </div>
 
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-800">Social Media (Optional)</h3>
+            <h3 className="text-lg font-semibold text-gray-800">
+              Social Media (Optional)
+            </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="facebook" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="facebook"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Facebook
                 </label>
                 <input
@@ -381,83 +453,96 @@ export default function ProviderSignup() {
               </div>
 
               <div>
-                <label htmlFor="instagram" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="instagram"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Instagram
                 </label>
                 <input
                   type="url"
-                    id="instagram"
-                    name="socialMedia.instagram"
-                    value={formData.socialMedia.instagram}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                    placeholder="https://instagram.com/yourbusiness"
-                  />
-                </div>
+                  id="instagram"
+                  name="socialMedia.instagram"
+                  value={formData.socialMedia.instagram}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                  placeholder="https://instagram.com/yourbusiness"
+                />
+              </div>
 
-                <div>
-                  <label htmlFor="twitter" className="block text-sm font-medium text-gray-700 mb-2">
-                    Twitter
-                  </label>
-                  <input
-                    type="url"
-                    id="twitter"
-                    name="socialMedia.twitter"
-                    value={formData.socialMedia.twitter}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                    placeholder="https://twitter.com/yourbusiness"
-                  />
-                </div>
+              <div>
+                <label
+                  htmlFor="twitter"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Twitter
+                </label>
+                <input
+                  type="url"
+                  id="twitter"
+                  name="socialMedia.twitter"
+                  value={formData.socialMedia.twitter}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                  placeholder="https://twitter.com/yourbusiness"
+                />
+              </div>
 
-                <div>
-                  <label htmlFor="linkedin" className="block text-sm font-medium text-gray-700 mb-2">
-                    LinkedIn
-                  </label>
-                  <input
-                    type="url"
-                    id="linkedin"
-                    name="socialMedia.linkedin"
-                    value={formData.socialMedia.linkedin}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                    placeholder="https://linkedin.com/company/yourbusiness"
-                  />
-                </div>
+              <div>
+                <label
+                  htmlFor="linkedin"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  LinkedIn
+                </label>
+                <input
+                  type="url"
+                  id="linkedin"
+                  name="socialMedia.linkedin"
+                  value={formData.socialMedia.linkedin}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                  placeholder="https://linkedin.com/company/yourbusiness"
+                />
+              </div>
 
-                <div className="md:col-span-2">
-                  <label htmlFor="youtube" className="block text-sm font-medium text-gray-700 mb-2">
-                    YouTube
-                  </label>
-                  <input
-                    type="url"
-                    id="youtube"
-                    name="socialMedia.youtube"
-                    value={formData.socialMedia.youtube}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                    placeholder="https://youtube.com/c/yourbusiness"
-                  />
-                </div>
+              <div className="md:col-span-2">
+                <label
+                  htmlFor="youtube"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  YouTube
+                </label>
+                <input
+                  type="url"
+                  id="youtube"
+                  name="socialMedia.youtube"
+                  value={formData.socialMedia.youtube}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                  placeholder="https://youtube.com/c/yourbusiness"
+                />
               </div>
             </div>
+          </div>
 
+          <button
+            type="submit"
+            onClick={() => router.push("/password")}
+            className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold py-3 px-6 rounded-lg hover:from-purple-700 hover:to-indigo-700 transform hover:scale-[1.02] transition-all duration-200 shadow-lg"
+          >
+            Create Provider Account
+          </button>
+
+          <div className="text-center pt-4">
             <button
-              type="submit"
-              className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold py-3 px-6 rounded-lg hover:from-purple-700 hover:to-indigo-700 transform hover:scale-[1.02] transition-all duration-200 shadow-lg"
+              type="button"
+              onClick={() => router.push("/signup")}
+              className="text-purple-600 hover:text-purple-800 font-medium transition-colors"
             >
-              Create Provider Account
+              ← Back to signup options
             </button>
-
-            <div className="text-center pt-4">
-              <button
-                type="button"
-                onClick={() => router.push("/signup")}
-                className="text-purple-600 hover:text-purple-800 font-medium transition-colors"
-              >
-                ← Back to signup options
-              </button>
-            </div>
+          </div>
         </form>
       </div>
     </div>
