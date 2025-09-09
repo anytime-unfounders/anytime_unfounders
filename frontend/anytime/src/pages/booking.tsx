@@ -12,7 +12,7 @@ export default function Booking() {
     const serviceDetails = {
         service: "Dog Walker",
         provider: "Mary Cape",
-        price: "10/h"
+        price: "10/hr"
     };
 
     function openPayment() {
