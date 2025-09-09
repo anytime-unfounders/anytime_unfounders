@@ -4,25 +4,47 @@ export default function Bg() {
   const [scrollY, setScrollY] = useState(0);
 
   useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
+    let ticking = false;
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setScrollY(window.scrollY);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
     <>
-      <div
-        className="absolute top-20 left-10 w-72 h-72 bg-[#6c48b8] rounded-full mix-blend-multiply filter blur-3xl opacity-30 pointer-events-none"
-        style={{ transform: `translateY(${scrollY * 0.2}px)`, zIndex: 0 }}
-      />
-      <div
-        className="absolute top-40 right-10 w-96 h-96 bg-[#8BBfFF] rounded-full mix-blend-multiply filter blur-3xl opacity-30 pointer-events-none"
-        style={{ transform: `translateY(${scrollY * 0.3}px)`, zIndex: 0 }}
-      />
-      <div
-        className="absolute bottom-20 left-1/2 -translate-x-1/2 w-80 h-80 bg-[#8B46F6] rounded-full mix-blend-multiply filter blur-3xl opacity-30 pointer-events-none"
-        style={{ transform: `translateY(${scrollY * 0.15}px)`, zIndex: 0 }}
-      />
+      <div className="bg-blob bg-blob-1" />
+      <div className="bg-blob bg-blob-2" />
+      <div className="bg-blob bg-blob-3" />
+      <style jsx global>{`
+        .bg-blob {
+          position: absolute;
+          border-radius: 9999px;
+          mix-blend-mode: multiply;
+          filter: blur(32px);
+          opacity: 0.3;
+          pointer-events: none;
+          z-index: 0;
+          will-change: transform;
+          transition: transform 0.2s cubic-bezier(.4,0,.2,1);
+        }
+        .bg-blob-1 {
+          top: 5rem; left: 2.5rem; width: 18rem; height: 18rem; background: #6c48b8;
+        }
+        .bg-blob-2 {
+          top: 10rem; right: 2.5rem; width: 24rem; height: 24rem; background: #8BBfFF;
+        }
+        .bg-blob-3 {
+          bottom: 5rem; left: 50%; transform: translateX(-50%); width: 20rem; height: 20rem; background: #8B46F6;
+        }
+      `}</style>
     </>
   );
 }
