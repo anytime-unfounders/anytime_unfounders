@@ -189,7 +189,7 @@ export default function CategoryPage() {
             <header className="sticky top-0 z-30 border-b bg-white/80 backdrop-blur">
                 <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-4">
                     <Link href="/services" className="text-[#6C38B8] font-semibold">← Back</Link>
-                    <img src={meta.icon} alt="" className="h-10 w-10" />
+                    <Image src={meta.icon} alt="" width={40} height={40} className="h-10 w-10" />
                     <div className="flex flex-col">
                         <h1 className="text-2xl font-extrabold leading-tight">{meta.title}</h1>
                         <p className="text-sm text-gray-600">{meta.blurb}</p>

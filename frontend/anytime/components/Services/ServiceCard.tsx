@@ -35,9 +35,11 @@ export default function ServiceCard({
       <div className="flex h-full">
         {/* Image container with better proportions */}
         <div className={`${shortCard ? "w-28 h-auto" : "w-32"} relative flex-shrink-0`}>
-          <img
+          <Image
             src={imgSrc}
             alt={title}
+            width={128}
+            height={128}
             className="h-full w-full object-cover"
             onError={() => setImgSrc("/file.svg")}
           />

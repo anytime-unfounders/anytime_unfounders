@@ -110,7 +110,7 @@ export default function SignIn() {
         </form>
 
         <div className="mt-4 text-center text-gray-600">
-          If you don't have an account,&nbsp;
+          If you don&#39;t have an account,&nbsp;
           <Link href="/signup" className="text-[#6C38B8] underline-offset-2 hover:underline font-semibold">
             go to sign up
           </Link>

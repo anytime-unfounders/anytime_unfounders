@@ -307,7 +307,7 @@ function ProviderForm({ onBack }: { onBack: () => void }) {
         {/* What You'll Need */}
         <div className="bg-gray-50 p-4 sm:p-6 rounded-lg">
           <h3 className="font-semibold text-gray-800 mb-3 sm:mb-4 text-sm sm:text-base">
-            What you'll need to get started:
+            What you&#39;ll need to get started:
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
             <div className="flex items-center">

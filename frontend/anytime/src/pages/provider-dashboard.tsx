@@ -115,7 +115,7 @@ export default function ProviderDashboard() {
                 </div>
 
                 <h1 className="text-lg md:text-4xl font-bold mb-1 text-center px-4">View Your Service.</h1>
-                <p className="text-sm md:text-lg text-gray-600 mb-4 text-center px-4 max-w-2xl">Here's how your service looks to our users.</p>
+                <p className="text-sm md:text-lg text-gray-600 mb-4 text-center px-4 max-w-2xl">Here&#39;s how your service looks to our users.</p>
 
                 {/* Floating Guy at Top - responsive container */}
                 <div className="w-full flex justify-center pt-4 px-4">

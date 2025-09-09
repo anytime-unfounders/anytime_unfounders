@@ -4,107 +4,6 @@ import { useMemo, useState } from "react";
 import Image from "next/image";
 
 
-function InstantBookingBox({ category }: { category: string }) {
-    const router = useRouter();
-    const [date, setDate] = useState<string>(() =>
-        new Date().toISOString().slice(0, 10)
-    );
-    const [time, setTime] = useState("18:00");
-    const [hours, setHours] = useState(2);
-    const [guests, setGuests] = useState(2);
-    const [notes, setNotes] = useState("");
-
-    const handleInstant = async () => {
-        // TODO: replace with API call to actually book.
-        // Example:
-        // await fetch("/api/book", { method: "POST", headers: {"Content-Type":"application/json"},
-        //   body: JSON.stringify({ category, date, time, hours, guests, notes, instant: true }) });
-
-        router.push("/thanksforbooking");
-    };
-
-    return (
-        <div className="rounded-2xl border bg-white p-4 shadow-sm">
-            <div className="mb-2 text-[#8841FA] text-large font-extrabold">Instant booking</div>
-
-            <div className="grid grid-cols-2 gap-3">
-                <div className="col-span-2">
-                    <label className="block text-xs text-gray-600">Category</label>
-                    <input
-                        value={category}
-                        readOnly
-                        className="w-full rounded-lg border bg-gray-50 px-3 py-2 text-gray-700"
-                    />
-                </div>
-
-                <div>
-                    <label className="block text-xs text-gray-600">Date</label>
-                    <input
-                        type="date"
-                        value={date}
-                        onChange={(e) => setDate(e.target.value)}
-                        className="w-full rounded-lg border px-3 py-2"
-                    />
-                </div>
-
-                <div>
-                    <label className="block text-xs text-gray-600">Time</label>
-                    <input
-                        type="time"
-                        value={time}
-                        onChange={(e) => setTime(e.target.value)}
-                        className="w-full rounded-lg border px-3 py-2"
-                    />
-                </div>
-
-                <div>
-                    <label className="block text-xs text-gray-600">Hours</label>
-                    <input
-                        type="number"
-                        min={1}
-                        max={12}
-                        value={hours}
-                        onChange={(e) => setHours(Number(e.target.value))}
-                        className="w-full rounded-lg border px-3 py-2"
-                    />
-                </div>
-
-                <div>
-                    <label className="block text-xs text-gray-600">Guests</label>
-                    <input
-                        type="number"
-                        min={1}
-                        value={guests}
-                        onChange={(e) => setGuests(Number(e.target.value))}
-                        className="w-full rounded-lg border px-3 py-2"
-                    />
-                </div>
-
-                <div className="col-span-2">
-                    <label className="block text-xs text-gray-600">Notes</label>
-                    <textarea
-                        rows={2}
-                        value={notes}
-                        onChange={(e) => setNotes(e.target.value)}
-                        placeholder="Dietary needs, time window, address…"
-                        className="w-full rounded-lg border px-3 py-2"
-                    />
-                </div>
-            </div>
-
-            <button
-                onClick={handleInstant}
-                className="mt-3 w-full rounded-xl bg-[#8B46F6] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#6C38B8]"
-            >
-                Instant Book →
-            </button>
-
-            <p className="mt-2 text-[11px] text-gray-500">
-                We’ll match you with an available provider instantly.
-            </p>
-        </div>
-    );
-}
 
 
 type Service = {
@@ -191,7 +90,7 @@ export default function CategoryPage() {
             <header className="sticky top-0 z-30 border-b bg-white/80 backdrop-blur">
                 <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-4">
                     <Link href="/services" className="text-[#6C38B8] font-semibold">← Back</Link>
-                    <img src={meta.icon} alt="" className="h-10 w-10" />
+                    <Image src={meta.icon} alt="" width={40} height={40} className="h-10 w-10" />
                     <div className="flex flex-col">
                         <h1 className="text-2xl font-extrabold leading-tight">{meta.title}</h1>
                         <p className="text-sm text-gray-600">{meta.blurb}</p>

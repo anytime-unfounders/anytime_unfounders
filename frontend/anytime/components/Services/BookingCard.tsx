@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Image from "next/image";
 
 interface BookingCardProps {
   image: string;
@@ -31,9 +32,11 @@ export default function BookingCard({
       <div className="flex flex-col sm:flex-row h-full">
         {/* Image container - responsive width */}
         <div className="w-full sm:w-28 h-36 sm:h-auto relative flex-shrink-0">
-          <img
+          <Image
             src={imgSrc}
             alt={title}
+            width={112}
+            height={144}
             className="h-full w-full object-cover"
             onError={() => setImgSrc("/file.svg")}
           />

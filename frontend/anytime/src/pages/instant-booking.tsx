@@ -38,7 +38,7 @@ export default function InstantBooking() {
                 <div className="rounded-2xl border bg-white p-8 shadow-sm">
                     <div className="mb-6 text-center">
                         <h2 className="text-2xl font-bold text-[#8841FA] mb-2">Instant Booking</h2>
-                        <p className="text-gray-600">Fill out the details below and we'll match you with an available provider instantly.</p>
+                        <p className="text-gray-600">Fill out the details below and we&#39;ll match you with an available provider instantly.</p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -123,7 +123,7 @@ export default function InstantBooking() {
                     </button>
 
                     <p className="mt-4 text-sm text-gray-500 text-center">
-                        We'll match you with an available provider instantly and send you confirmation details.
+                        We&#39;ll match you with an available provider instantly and send you confirmation details.
                     </p>
                 </div>
             </main>

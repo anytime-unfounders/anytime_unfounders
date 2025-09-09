@@ -5,12 +5,10 @@ import ServiceCategoryCard from "../../components/Services/ServiceCategoryCard";
 import SectionTitle from "../../components/Services/Section";
 import SortDropdown from "../../components/Services/SortDropdown";
 import { useRouter } from "next/router";
-import Image from "next/image";
 import { useState } from "react";
 
-export default function Services() {
+function ServicesPage() {
   const router = useRouter();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Example data for demonstration
   const categories = [
@@ -199,3 +197,5 @@ export default function Services() {
     </div>
   );
 }
+
+export default ServicesPage;
