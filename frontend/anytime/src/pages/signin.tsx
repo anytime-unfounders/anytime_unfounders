@@ -5,7 +5,7 @@ import Link from "next/link";
 
 export default function SignIn() {
   // -------------------- local state --------------------
-  const [items, setItems] = useState<any[]>([]);     // demo fetch to verify proxy works
+  const [items, setItems] = useState<unknown[]>([]);     // demo fetch to verify proxy works
   const [email, setEmail] = useState("");            // user email input
   const [password, setPassword] = useState("");      // user password input
   const [error, setError] = useState("");            // UI error banner

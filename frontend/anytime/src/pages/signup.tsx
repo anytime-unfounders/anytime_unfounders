@@ -57,13 +57,28 @@ function UserTypeSelector({
 }
 
 // Customer form component
+import Link from "next/link";
+
+type CustomerFormType = {
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  address1: string;
+  address2: string;
+  city: string;
+  postal: string;
+  province: string;
+  country: string;
+};
+
 function CustomerForm({
   form,
   onChange,
   onBack,
   onSubmit,
 }: {
-  form: any;
+  form: CustomerFormType;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onBack: () => void;
   onSubmit: (e: React.FormEvent) => void;
@@ -212,18 +227,12 @@ function CustomerForm({
           </button>
 
           {/* SUBMIT BUTTON */}
-          {/* <button
-            type="submit"
-            className="bg-[#8B46F6] hover:bg-[#6C38B8] text-white font-semibold rounded-full px-8 py-2 transition-all"
-          >
-            Go!
-          </button> */}
-          <a
+          <Link
             href="/password"
             className="bg-[#8B46F6] hover:bg-[#6C38B8] text-white font-semibold rounded-full px-6 sm:px-8 py-2 transition-all text-sm sm:text-base order-1 sm:order-2 w-full sm:w-auto text-center"
           >
             Go!
-          </a>
+          </Link>
         </div>
       </div>
     </form>

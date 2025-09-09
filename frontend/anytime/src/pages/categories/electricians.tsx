@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
+import Image from "next/image";
 
 function InstantBookingBox({ category }: { category: string }) {
     const router = useRouter();
@@ -163,7 +164,8 @@ export default function CategoryPage() {
 
     const [q, setQ] = useState("");
     const [minRating, setMinRating] = useState(0);
-    const [sort, setSort] = useState<"relevance" | "rating" | "price_asc" | "price_desc">("relevance");
+    type SortType = "relevance" | "rating" | "price_asc" | "price_desc";
+    const [sort, setSort] = useState<SortType>("relevance");
 
     const results = useMemo(() => {
         const parsePrice = (p: string) => Number((p.match(/[\d.]+/) || ["0"])[0]);
@@ -195,7 +197,7 @@ export default function CategoryPage() {
                     <div className="ml-auto">
                         <select
                             value={sort}
-                            onChange={(e) => setSort(e.target.value as any)}
+                            onChange={(e) => setSort(e.target.value as SortType)}
                             className="rounded-lg border bg-white px-3 py-2 text-sm"
                         >
                             <option value="relevance">Sort: Relevance</option>
@@ -279,7 +281,7 @@ function ResultCard({ image, title, provider, experience, rating, price, tag, ta
     return (
         <div className="flex w-full items-stretch overflow-hidden rounded-2xl border bg-white shadow-sm">
             {/* Image column fills card height */}
-            <img src={image} alt={title} className="h-auto w-60 object-cover md:h-full" />
+            <Image src={image} alt={title} width={240} height={180} className="h-auto w-60 object-cover md:h-full" />
 
             {/* Content */}
             <div className="min-w-0 flex-1 p-5">

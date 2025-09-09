@@ -56,12 +56,15 @@ export default function ProviderSignup() {
         ...prev,
         profilePhoto: files[0] || null,
       }));
-    } else {
-      // cast to any to satisfy TS for dynamic field assignment
+    } else if (
+      fieldName === "coverPhotos" ||
+      fieldName === "videos" ||
+      fieldName === "portfolioPhotos"
+    ) {
       setFormData((prev) => ({
         ...prev,
         [fieldName]: files,
-      } as any));
+      }));
     }
   };
 

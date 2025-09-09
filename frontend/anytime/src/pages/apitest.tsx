@@ -14,8 +14,12 @@ export default function TestAPI(): React.JSX.Element {
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const data = await res.json();
             setMsg(JSON.stringify(data));
-        } catch (err: any) {
-            setMsg("Error: " + err.message);
+            } catch (err: unknown) {
+                if (err instanceof Error) {
+                    setMsg("Error: " + err.message);
+                } else {
+                    setMsg("Unknown error");
+                }
         }
     }
 
