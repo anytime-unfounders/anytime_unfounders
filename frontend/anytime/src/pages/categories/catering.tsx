@@ -134,27 +134,27 @@ const MOCK_RESULTS: Service[] = [
         provider: "Marques Jacob",
         experience: "10 years experience",
         rating: 5,
-        price: "$460/h",
+        price: "$460/hr",
         tag: "Verified",
         tagColor: "bg-pink-500",
     },
     {
-        image: "/service-photos/dog.jpg",
+        image: "/service-photos/buffet.jpeg",
         title: "Buffet Catering",
         provider: "Amara Foods",
         experience: "7 years experience",
         rating: 4.7,
-        price: "$120/h",
+        price: "$430/hr",
         tag: "–15%",
         tagColor: "bg-pink-500",
     },
     {
-        image: "/service-photos/electrician.jpg",
+        image: "/service-photos/mealprep.jpg",
         title: "Meal Prep (Weekly)",
         provider: "Chef Lina",
         experience: "6 years experience",
         rating: 4.9,
-        price: "$85/h",
+        price: "$85/hr",
     },
 ];
 
@@ -217,14 +217,7 @@ export default function CategoryPage() {
 
                 <aside className="h-fit rounded-2xl border bg-white p-4 shadow-sm md:sticky md:top-20">
 
-                    <div className="mb-4">
-                        <Link
-                            href="/instant-booking"
-                            className="w-full rounded-xl bg-[#8B46F6] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#6C38B8] block text-center"
-                        >
-                            Instant Book →
-                        </Link>
-                    </div>
+                    <InstantBookingBox category={meta.title} />
 
                     <div className="my-4 h-px bg-gray-200" />
 

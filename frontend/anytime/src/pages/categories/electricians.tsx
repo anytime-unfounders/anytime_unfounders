@@ -67,16 +67,7 @@ function InstantBookingBox({ category }: { category: string }) {
                     />
                 </div>
 
-                <div>
-                    <label className="block text-xs text-gray-600">Guests</label>
-                    <input
-                        type="number"
-                        min={1}
-                        value={guests}
-                        onChange={(e) => setGuests(Number(e.target.value))}
-                        className="w-full rounded-lg border px-3 py-2"
-                    />
-                </div>
+
 
                 <div className="col-span-2">
                     <label className="block text-xs text-gray-600">Notes</label>
@@ -84,7 +75,7 @@ function InstantBookingBox({ category }: { category: string }) {
                         rows={2}
                         value={notes}
                         onChange={(e) => setNotes(e.target.value)}
-                        placeholder="Dietary needs, time window, address…"
+                        placeholder="What issue can we help you with?"
                         className="w-full rounded-lg border px-3 py-2"
                     />
                 </div>
@@ -127,32 +118,32 @@ const CATEGORY_META: Record<string, { title: string; icon: string; blurb: string
 
 const MOCK_RESULTS: Service[] = [
     {
-        image: "/service-photos/chef.jpg",
-        title: "Private Chef",
-        provider: "Marques Jacob",
+        image: "/service-photos/smartlighting.jpg",
+        title: "Smart Lighting & Home Automation",
+        provider: "Maylee Johnson",
         experience: "10 years experience",
-        rating: 5,
-        price: "$460/h",
+        rating: 4,
+        price: "$46/hr",
         tag: "Verified",
         tagColor: "bg-pink-500",
     },
     {
-        image: "/service-photos/dog.jpg",
-        title: "Buffet Catering",
-        provider: "Amara Foods",
-        experience: "7 years experience",
+        image: "/service-photos/panelupgrade.jpg",
+        title: "Panel Upgrade",
+        provider: "Alex Gomez",
+        experience: "10 years experience",
         rating: 4.7,
-        price: "$120/h",
-        tag: "–15%",
+        price: "$120/hr",
+        tag: "–23%",
         tagColor: "bg-pink-500",
     },
     {
         image: "/service-photos/electrician.jpg",
-        title: "Meal Prep (Weekly)",
-        provider: "Chef Lina",
+        title: "Smart Lighting & Home Automation",
+        provider: "John Doe",
         experience: "6 years experience",
         rating: 4.9,
-        price: "$85/h",
+        price: "$85/hr",
     },
 ];
 
