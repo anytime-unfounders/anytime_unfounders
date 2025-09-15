@@ -9,10 +9,10 @@ export default function ProvidersIndex() {
         <p className="text-gray-600 mb-6">Thank you — your verification steps are complete. You can now manage your services and profile.</p>
         <div className="flex justify-center">
           <button
-            onClick={() => router.push("/services")}
+            onClick={() => router.push("/provider-dashboard")}
             className="bg-[#8B46F6] hover:bg-[#6C38B8] text-white font-semibold rounded-full px-6 py-2"
           >
-            Go to Services
+            Go to Providers
           </button>
         </div>
       </div>

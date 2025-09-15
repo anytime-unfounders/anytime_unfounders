@@ -9,10 +9,13 @@ import { useState } from "react";
 
 function ServicesPage() {
   const router = useRouter();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [currentView, setCurrentView] = useState("Customers");
 
   // Example data for demonstration
   const categories = [
-    { icon: "/service-icons/repair.svg", label: "InstantBooking", hot: true },
+    { icon: "/service-icons/repair.svg", label: "Plumbing", hot: true },
     { icon: "/service-icons/petcare.svg", label: "Petcare" },
     { icon: "/service-icons/chef.svg", label: "Catering" },
     { icon: "/service-icons/electrician.png", label: "Electricians" },
@@ -111,6 +114,52 @@ function ServicesPage() {
 
   return (
     <div className="min-h-screen bg-[#F6F8FB]">
+      {/* Top right dropdown button */}
+      <div className="absolute top-10 right-12 z-20">
+        <div className="relative">
+          <button
+            onClick={() => setDropdownOpen(!dropdownOpen)}
+            className="bg-[#8B46F6] hover:bg-[#6C38B8] text-white font-semibold px-4 py-2 rounded-full transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center gap-2"
+          >
+            {currentView}
+            <svg
+              className={`w-4 h-4 transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          {dropdownOpen && (
+            <div className="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-30">
+              <button
+                onClick={() => {
+                  setCurrentView("Customers");
+                  setDropdownOpen(false);
+                }}
+                className={`w-full text-left px-4 py-2 hover:bg-gray-100 transition-colors ${currentView === "Customers" ? "bg-purple-50 text-[#8B46F6] font-semibold" : "text-gray-700"
+                  }`}
+              >
+                Customers
+              </button>
+              <button
+                onClick={() => {
+                  setCurrentView("Providers");
+                  setDropdownOpen(false);
+                  router.push("/signup");
+                }}
+                className={`w-full text-left px-4 py-2 hover:bg-gray-100 transition-colors ${currentView === "Providers" ? "bg-purple-50 text-[#8B46F6] font-semibold" : "text-gray-700"
+                  }`}
+              >
+                Providers
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* Main content with responsive padding */}
       <div className="w-full px-4 sm:px-6 md:px-8 lg:px-10 py-6 md:py-8">
         {/* Responsive grid layout */}
@@ -143,7 +192,7 @@ function ServicesPage() {
             <div>
               <SectionTitle>My Upcoming Bookings:</SectionTitle>
               <div className="w-full">
-                <BookingCard {...upcomingBooking} onView={() => {}} />
+                <BookingCard {...upcomingBooking} onView={() => { }} />
               </div>
             </div>
 
